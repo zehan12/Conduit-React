@@ -1,11 +1,19 @@
+import React from "react";
+import Home from "./components/Home";
 
 
-function App() {
-  return (
-    <div className="container md:mx-auto">
-     <h1 className='xl:bg-red-300'>Conduit</h1>
-    </div>
-  );
+class App extends React.Component {
+  constructor(){
+    super();
+    this.state = {
+    }
+  }
+
+  render() {
+      return [
+        <Home />
+      ]
+  }
 }
 
 export default App;
