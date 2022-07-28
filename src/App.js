@@ -1,5 +1,6 @@
 import React from "react";
 import Home from "./components/Home";
+import SignUp from "./components/SignUp"
 
 
 class App extends React.Component {
@@ -11,7 +12,8 @@ class App extends React.Component {
 
   render() {
       return [
-        <Home />
+        // <Home />
+        <SignUp />
       ]
   }
 }
