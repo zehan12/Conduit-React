@@ -8,7 +8,11 @@ export default function Articles({ articles }) {
 
     return(
         <div className="border-2 border-fuchsia-400">
+            
             {
+                !articles && <h1 className='m-20 h-20'>Loading...</h1>
+            }
+            {   articles &&
                 articles.map((article) => <div key={article.slug}>
                     <img className="w-10 h-10 rounded-3xl" src={article.author.image} alt="" />
                     <h3 className="text-green-500 hover:underline hover:text-green-700 "> {article.author.username} </h3>

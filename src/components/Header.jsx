@@ -8,13 +8,13 @@ function Header() {
       <nav>
         <ul className="flex ml-3">
           <li className="text-sm text-gray-100 ml-4 ">
-            <Link>Home</Link> 
+            <Link to="/"> Home</Link> 
+          </li> 
+          <li className="text-sm text-gray-100 ml-4 ">
+            <Link to="/signup" >Sign Up</Link>
           </li>
           <li className="text-sm text-gray-100 ml-4 ">
-            Sign Up
-          </li>
-          <li className="text-sm text-gray-100 ml-4 ">
-            Sign In
+            <Link to="/signin" >Sign In</Link>
           </li>
         </ul>
       </nav>

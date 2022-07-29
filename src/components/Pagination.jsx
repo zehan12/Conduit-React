@@ -1,6 +1,6 @@
 export default function Pagination( { articlesCount } ) {
-
-    const noOfPage = parseInt((articlesCount/10) + .5);
+ 
+    const noOfPage = parseInt((articlesCount/10) + .5) || 0
     return <div style={{width:"55%",marginLeft:"13.3%"}} className="flex w-40  flex-wrap flex-row ">
         {
            Array.from(Array(noOfPage).keys()).map((e)=> <div 
