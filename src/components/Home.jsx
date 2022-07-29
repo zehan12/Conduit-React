@@ -17,6 +17,7 @@ class Home extends React.Component {
   }
 
  componentDidMount() {
+  console.log("mo")
     this.fetchArticles()
   }
 
@@ -36,7 +37,6 @@ class Home extends React.Component {
 
   render() {
       return [
-        <Header />,
         <Hero />,
         <FeedSection 
          articles={ this.state.articles }
