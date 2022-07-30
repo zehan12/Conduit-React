@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import url from "../utils/constants"
 
 class SignUp extends React.Component {
@@ -93,7 +94,7 @@ class SignUp extends React.Component {
         return (
             <div style={{ width: "50%" }} className="text-center container">
                 <h1 className="text-4xl my-2">Sign Up</h1>
-                <p className="text-green-400">Have an account?</p>
+                <Link to="signin" className="text-green-400">Have an account?</Link>
                 {
                     this.state.errors &&
                     console.log(this.state.errors, "errors in jsx")

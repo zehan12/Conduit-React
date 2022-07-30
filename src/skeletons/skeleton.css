@@ -1,0 +1,69 @@
+.skeleton {
+    background: #ddd;
+    margin: 10px;
+    border-radius: 4px;
+}
+
+.skeleton.text {
+    width: 6rem;
+    height: 0.5rem;
+}
+
+.skeleton.title {
+    width: 30%;
+    height: 1rem;
+    margin-bottom: 15px;
+}
+
+.skeleton.avatar{
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+}
+
+.skeleton.para {  
+    width:5rem;
+    height: 0.5rem;
+}
+
+.skeleton.box {
+    width: 2.5rem;
+    height: 2rem;
+}
+
+.skeleton.sm-text {
+    width: 2rem;
+    height: 0.3rem;
+}
+
+.skeleton-wrapper{
+    padding: 0.5rem;
+    height: 20%;
+    background: #f2f2f2;
+    position: relative;
+    overflow: hidden;
+}
+
+.shimmer-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    animation: loading 2.5s infinite;
+}
+
+
+.shimmer {
+    width: 50%;
+    height: 100%;
+    background: rgba(236, 229, 229, 0.76);
+    transform: skewX(-20deg);
+    box-shadow: 0 0 30px 30px rgba(225, 255, 255, 0.0.5);
+}
+
+@keyframes loading {
+    0% { transform: translateX(-150%) }
+    50% { transform: translateX(-60%) }
+    100% { transform: translateX(150%) }
+}

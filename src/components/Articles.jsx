@@ -1,4 +1,5 @@
 import { BsHeartFill } from 'react-icons/bs'
+import SkeletonArticles from "../skeletons/SkeletonArticles"
 
 export default function Articles({ articles }) {
 
@@ -7,10 +8,11 @@ export default function Articles({ articles }) {
     }
 
     return(
-        <div className="border-2 border-fuchsia-400">
+        <div className="border-2  border-fuchsia-400">
             
             {
-                !articles && <h1 className='m-20 h-20'>Loading...</h1>
+                !articles && <SkeletonArticles />
+
             }
             {   articles &&
                 articles.map((article) => <div key={article.slug}>

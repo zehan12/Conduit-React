@@ -1,5 +1,6 @@
 import React from "react";
-
+import { Link } from "react-router-dom"
+ 
 class SignIn extends React.Component {
     constructor() {
         super();
@@ -44,7 +45,7 @@ class SignIn extends React.Component {
         return (
             <div style={{ width: "50%" }} className="text-center container">
                 <h1 className="text-4xl my-2">Sign In</h1>
-                <p className="text-green-400">Need an account?</p>
+                <Link to="/signup" className="text-green-400">Need an account?</Link>
                 <form onSubmit={this.handleFormSubmit}>
                     {formErrors.map(error => <p key={error}>{error}</p>)}
                     <input ref={this.email}

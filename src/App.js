@@ -4,7 +4,7 @@ import Header from "./components/Header";
 import Home from "./components/Home";
 import SignUp from "./components/SignUp"
 import SignIn from "./components/SignIn"
-
+import ArticlePage from "./components/ArticlePage";
 
 class App extends React.Component {
   constructor(){
@@ -24,6 +24,7 @@ class App extends React.Component {
 
             <Route path="/signup" > <SignUp /> </Route>
             <Route path="/signin" > <SignIn /> </Route>
+            {/* <Route Path="/article" > <ArticlePage /> </Route> */}
             <Route path="/" > <Home /> </Route>
 
           </Switch>
