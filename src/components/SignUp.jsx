@@ -45,7 +45,7 @@ class SignUp extends React.Component {
 
     handelSubmit = (event) => {
         event.preventDefault();
-        fetch(url.userRegisterUrl, {
+        fetch(url.register, {
             method: "POST",
             headers: {
                 'Accept': 'application/json',

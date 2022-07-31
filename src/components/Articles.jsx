@@ -1,5 +1,6 @@
 import { BsHeartFill } from 'react-icons/bs'
 import SkeletonArticles from "../skeletons/SkeletonArticles"
+import { Link } from 'react-router-dom'
 
 export default function Articles({ articles }) {
 
@@ -28,7 +29,7 @@ export default function Articles({ articles }) {
                     <p> {String(new Date(article.createdAt)).slice(0, 16)} </p>
                     <h2>{article.title}</h2>
                     <p> { article.description.substring(0,200) } </p>
-                    <button> Read more... </button>
+                    <Link to={`article/${article.slug}`}> Read more... </Link>
                     <div>{article.tagList}</div>
                 </div>)
             }

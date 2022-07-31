@@ -17,13 +17,12 @@ class Home extends React.Component {
   }
 
  componentDidMount() {
-  console.log("mo")
     this.fetchArticles()
   }
 
   fetchArticles = async() => {
     try {
-        const url = ["https://mighty-oasis-08080.herokuapp.com/api/article", "https://mighty-oasis-08080.herokuapp.com/api/tags"];
+        const url = ["https://mighty-oasis-08080.herokuapp.com/api/articles", "https://mighty-oasis-08080.herokuapp.com/api/tags"];
         const response = await Promise.all( url.map((e)=> fetch(e) ) );
         const json = await Promise.all(response.map((e)=> e.json()));
         if ( json ) this.setState( { articles: json[0].articles, articlesCount: json[0].articlesCount, tags: json[1].tags } )

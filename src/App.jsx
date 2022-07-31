@@ -7,25 +7,30 @@ import SignIn from "./components/SignIn"
 import ArticlePage from "./components/ArticlePage";
 
 class App extends React.Component {
-  constructor(){
-    super();
+  constructor( props ){
+    super( props );
     this.state = {
     }
+  }
+
+  componentDidMount(){
+    // console.log(this.props.match.params.slug);
+
   }
 
   render() {
       return (
         // <Home />
         // <SignUp />
-        <Router>
+        <Router >
           <Header />
 
           <Switch>
-
+            <Route exact path='/' component={Home} />
             <Route path="/signup" > <SignUp /> </Route>
             <Route path="/signin" > <SignIn /> </Route>
-            {/* <Route Path="/article" > <ArticlePage /> </Route> */}
-            <Route path="/" > <Home /> </Route>
+            <Route Path="/article/:slug" component={  ArticlePage } />
+            {/* <Route path="/" > <Home /> </Route> */}
 
           </Switch>
 
