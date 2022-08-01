@@ -1,8 +1,19 @@
-export default function FeedBar() {
-    return <div className="flex">
+import { Link } from "react-router-dom";
+
+export default function FeedBar( props) {
+    console.log(props,"i am not wrong")
+    return <div className="flex bg-red-500">
         <div className="hover:border-b-2 hover:border-green-500 hover:text-green-500">
-            Feed</div>
+            <Link>Feed</Link></div>
         <div className="hover:border-b-2 hover:border-green-500 hover:text-green-500">
-            Global Feed</div>
+            <Link>Global</Link>
+        </div>
+        {
+            props.tagSelected  && <div>
+                
+                <h1>#{props.tagSelected}</h1>
+                </div>
+        }
+        
     </div>
 }

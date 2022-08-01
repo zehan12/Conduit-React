@@ -6,23 +6,32 @@ import Pagination from "./Pagination";
 
 
 class Home extends React.Component {
-  constructor(){
-    super();
+  constructor(props){
+    super(props);
     this.state = {
       articles:[],
       articlesCount: 0,
       error:"",
-      tags:  []
+      tags:  [],
+      tagSelected:""
     }
   }
 
+
+  handleTags = (e) => {
+    console.log(e)
+    this.setState({tagSelected:e},()=>console.log("callback",this.state.tagSelected));
+    console.log(this.state)
+}
  componentDidMount() {
     this.fetchArticles()
+    console.log("d")
   }
 
   fetchArticles = async() => {
+
     try {
-        const url = ["https://mighty-oasis-08080.herokuapp.com/api/articles", "https://mighty-oasis-08080.herokuapp.com/api/tags"];
+        const url = [`https://mighty-oasis-08080.herokuapp.com/api/articles?tags=${this.tagSelected}`, "https://mighty-oasis-08080.herokuapp.com/api/tags"];
         const response = await Promise.all( url.map((e)=> fetch(e) ) );
         const json = await Promise.all(response.map((e)=> e.json()));
         if ( json ) this.setState( { articles: json[0].articles, articlesCount: json[0].articlesCount, tags: json[1].tags } )
@@ -35,15 +44,20 @@ class Home extends React.Component {
   
 
   render() {
-      return [
-        <Hero />,
+
+      return (
+        <>
+                <Hero />
         <FeedSection 
+         tagSelected={this.state.tagSelected}
+         handleTags={this.handleTags}
          articles={ this.state.articles }
          articlesCounts={ this.state.articlesCount }
          tags={ this.state.tags }
-        />,
+        />
         <Pagination articlesCount={ this.state.articlesCount } />
-      ]
+        </>
+      )
   }
 }
 

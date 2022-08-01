@@ -29,7 +29,8 @@ class App extends React.Component {
             <Route exact path='/' component={Home} />
             <Route path="/signup" > <SignUp /> </Route>
             <Route path="/signin" > <SignIn /> </Route>
-            <Route Path="/article/:slug" component={  ArticlePage } />
+            <Route Path="/article/:slug" exact={true} component={  ArticlePage } />
+            <Route path="*"> Page not found </Route>
             {/* <Route path="/" > <Home /> </Route> */}
 
           </Switch>

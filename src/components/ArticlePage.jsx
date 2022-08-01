@@ -3,20 +3,20 @@ import { Component } from "react"
 import url from "../utils/constants"
 
 class ArticlePage extends Component {
-    constructor( props ) {
-        super( props );
+    constructor(props) {
+        super(props);
         this.state = {
-            singleArticle:[]
+            singleArticle: []
         }
     }
 
-    componentDidMount(){
+    componentDidMount() {
         console.log(this.props.location.pathname.split("/"));
         const slug = this.props.location.pathname.split("/")[2];
-        console.log(url.base+"/articles"+slug)
-        fetch(`${url.globalFeed+"/"+slug}`).then((res)=>res.json()).then((data)=>console.log(data))
+        console.log(url.base + "/articles" + slug)
+        fetch(`${url.globalFeed + "/" + slug}`).then((res) => res.json()).then((data) => console.log(data))
         console.log(this.state)
-      }
+    }
 
 
 
@@ -52,21 +52,21 @@ class ArticlePage extends Component {
                     </div>
                 </div>
                 <div className="containe bg-red-500">
-                    <div className="mx-auto bg-green-300" style={{width:"50%"}}>
-                    <p className="text-left"> <Link> Sign in</Link> or <Link>sign up</Link> to add comments on this article.</p>
+                    <div className="mx-auto bg-green-300" style={{ width: "50%" }}>
+                        <p className="text-left"> <Link> Sign in</Link> or <Link>sign up</Link> to add comments on this article.</p>
 
                     </div>
 
-                <div className="mx-auto bg-purple-300" style={{width:"50%"}}>
-                    <div className="border-2">
-                        <h4 className="m-4">Thanks bro</h4>
+                    <div className="mx-auto bg-purple-300" style={{ width: "50%" }}>
+                        <div className="border-2">
+                            <h4 className="m-4">Thanks bro</h4>
+                        </div>
+                        <div className="border-2 flex">
+                            <image className="m-2" src="" alt="img"></image>
+                            <h3 className="ml-3">zehan</h3>
+                            <p className="ml-3">p24309</p>
+                        </div>
                     </div>
-                    <div className="border-2 flex">
-                        <image className="m-2" src="" alt="img"></image>
-                        <h3 className="ml-3">zehan</h3>
-                        <p className="ml-3">p24309</p>
-                    </div>
-                </div>
                 </div>
             </>
 
