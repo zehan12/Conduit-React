@@ -1,63 +1,87 @@
 import React from "react";
-import Header from "./Header";
 import Hero from "./Hero";
-import FeedSection from "./FeedSection";
-import Pagination from "./Pagination";
+import ArticleSection from "./ArticleSection";
+import Tags from "./Tags";
 
 
 class Home extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
-      articles:[],
-      articlesCount: 0,
-      error:"",
-      tags:  [],
-      tagSelected:""
+      error: "",
+      tags: [],
+      tagSelected: "",
+      isTagClicked:false,
     }
   }
 
+  // toggleTabs = (index) => {
+  //   this.setState(
+  //     {
+  //       activeTabs: index,
+  //     },
+  //     () => console.log(index, this.state.activeTabs));
+  //   console.log(index,this.state.activeTabs)
+  // }
 
   handleTags = (e) => {
-    console.log(e)
-    this.setState({tagSelected:e},()=>console.log("callback",this.state.tagSelected));
-    console.log(this.state)
-}
- componentDidMount() {
-    this.fetchArticles()
-    console.log("d")
+    this.setState({ tagSelected: e, isTagClicked:true  }, () => console.log("callback", this.state.tagSelected));
   }
 
-  fetchArticles = async() => {
+  componentDidMount() {
+    this.fetchTags("https://mighty-oasis-08080.herokuapp.com/api/tags")
 
+  }
+
+  // componentDidUpdate() {
+  //   console.log(this.state)
+  // }
+
+
+  fetchTags = async (url) => {
     try {
-        const url = [`https://mighty-oasis-08080.herokuapp.com/api/articles?tags=${this.tagSelected}`, "https://mighty-oasis-08080.herokuapp.com/api/tags"];
-        const response = await Promise.all( url.map((e)=> fetch(e) ) );
-        const json = await Promise.all(response.map((e)=> e.json()));
-        if ( json ) this.setState( { articles: json[0].articles, articlesCount: json[0].articlesCount, tags: json[1].tags } )
-        if ( json.errors )  this.setState( { error: json.error } )
-        if (!response.ok)  this.setState({error:response.statusText})
-      } catch (error) {
-        console.log(error);
-      }
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data) this.setState({ tags: data.tags });
+      // console.log(this.state, "tags")
+
+    } catch (err) {
+      return err
+    }
   }
-  
 
   render() {
 
-      return (
-        <>
-                <Hero />
-        <FeedSection 
+    return (
+      <>
+        <Hero />
+        <section className="container m-7 flex justify-between">
+          <div style={{ width: "75%" }}>
+            <ArticleSection
+              tagSelected={this.state.tagSelected}
+              isTagClicked={this.state.isTagClicked}
+            />
+          </div>
+          <div style={{ width: "23%" }}>
+            <Tags
+              tags={this.state.tags}
+              handleTags={this.handleTags}
+            />
+          </div>
+        </section>
+        {/* <FeedSection 
          tagSelected={this.state.tagSelected}
          handleTags={this.handleTags}
          articles={ this.state.articles }
          articlesCounts={ this.state.articlesCount }
          tags={ this.state.tags }
-        />
-        <Pagination articlesCount={ this.state.articlesCount } />
-        </>
-      )
+         activeTabs={ this.state.activeTabs }
+         toggleTabs={ this.toggleTabs }
+         tabsNav={ this.state.tabsNav }
+        /> */}
+        {/* <Pagination articlesCount={ this.state.articlesCount } /> */}
+      </>
+    )
   }
 }
 
