@@ -6,15 +6,16 @@ class ArticlePage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            singleArticle: []
+            article: [],
+            error:""
         }
     }
 
     componentDidMount() {
-        console.log(this.props.location.pathname.split("/"));
+        console.log(this.props);
         const slug = this.props.location.pathname.split("/")[2];
         console.log(url.base + "/articles" + slug)
-        fetch(`${url.globalFeed + "/" + slug}`).then((res) => res.json()).then((data) => console.log(data))
+        fetch(`${url.globalFeed + "/" + slug}`).then((res) => res.json()).then((data) => this.setState({article:data.article}))
         console.log(this.state)
     }
 
@@ -38,6 +39,7 @@ class ArticlePage extends Component {
                         </div>
                     </div>
                 </div>
+
                 <div className="container my-7">
                     <div className="">
                         <p className="text-xl">JSFuck is an esoteric and educational programming style based on the atomic parts of JavaScript. It uses only six different characters to write and execute code.
@@ -51,6 +53,8 @@ class ArticlePage extends Component {
                         </p>
                     </div>
                 </div>
+
+
                 <div className="containe bg-red-500">
                     <div className="mx-auto bg-green-300" style={{ width: "50%" }}>
                         <p className="text-left"> <Link> Sign in</Link> or <Link>sign up</Link> to add comments on this article.</p>

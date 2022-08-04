@@ -2,6 +2,7 @@ import React from "react";
 import Hero from "./Hero";
 import ArticleSection from "./ArticleSection";
 import Tags from "./Tags";
+import FeedTabs from "./FeedTabs";
 
 
 class Home extends React.Component {
@@ -11,7 +12,8 @@ class Home extends React.Component {
       error: "",
       tags: [],
       tagSelected: "",
-      isTagClicked:false,
+      isTagClicked: false,
+      activeTab: ""
     }
   }
 
@@ -24,9 +26,6 @@ class Home extends React.Component {
   //   console.log(index,this.state.activeTabs)
   // }
 
-  handleTags = (e) => {
-    this.setState({ tagSelected: e, isTagClicked:true  }, () => console.log("callback", this.state.tagSelected));
-  }
 
   componentDidMount() {
     this.fetchTags("https://mighty-oasis-08080.herokuapp.com/api/tags")
@@ -41,13 +40,22 @@ class Home extends React.Component {
   fetchTags = async (url) => {
     try {
       const res = await fetch(url);
+      if (!res.ok) {
+        throw new Error(res.statusText)
+      }
       const data = await res.json();
       if (data) this.setState({ tags: data.tags });
-      // console.log(this.state, "tags")
-
-    } catch (err) {
-      return err
+    } catch (error) {
+      return this.setState({ error: "NOT ABLE TO FETCH" })
     }
+  }
+
+  addTag = (e) => {
+    this.setState({ tagSelected: e, isTagClicked: true }, () => console.log("callback", this.state.tagSelected));
+  }
+
+  removeTag = () => {
+    this.setState({ tagSelected: "", isTagClicked: true }, () => console.log("callback", this.state.tagSelected));
   }
 
   render() {
@@ -57,29 +65,22 @@ class Home extends React.Component {
         <Hero />
         <section className="container m-7 flex justify-between">
           <div style={{ width: "75%" }}>
+            <FeedTabs 
+              removeTag={this.removeTag}
+              tagSelected={this.state.tagSelected}
+            />
             <ArticleSection
               tagSelected={this.state.tagSelected}
-              isTagClicked={this.state.isTagClicked}
             />
           </div>
           <div style={{ width: "23%" }}>
             <Tags
               tags={this.state.tags}
-              handleTags={this.handleTags}
+              addTag={this.addTag}
+              error={this.state.error}
             />
           </div>
         </section>
-        {/* <FeedSection 
-         tagSelected={this.state.tagSelected}
-         handleTags={this.handleTags}
-         articles={ this.state.articles }
-         articlesCounts={ this.state.articlesCount }
-         tags={ this.state.tags }
-         activeTabs={ this.state.activeTabs }
-         toggleTabs={ this.toggleTabs }
-         tabsNav={ this.state.tabsNav }
-        /> */}
-        {/* <Pagination articlesCount={ this.state.articlesCount } /> */}
       </>
     )
   }

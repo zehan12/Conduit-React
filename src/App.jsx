@@ -7,36 +7,31 @@ import SignIn from "./components/SignIn"
 import ArticlePage from "./components/ArticlePage";
 
 class App extends React.Component {
-  constructor( props ){
-    super( props );
+  constructor(props) {
+    super(props);
     this.state = {
     }
   }
 
-  componentDidMount(){
+  componentDidMount() {
     // console.log(this.props.match.params.slug);
 
   }
 
   render() {
-      return (
-        // <Home />
-        // <SignUp />
-        <Router >
-          <Header />
-
-          <Switch>
-            <Route exact path='/' component={Home} />
-            <Route path="/signup" > <SignUp /> </Route>
-            <Route path="/signin" > <SignIn /> </Route>
-            <Route Path="/article/:slug" exact={true} component={  ArticlePage } />
-            <Route path="*"> Page not found </Route>
-            {/* <Route path="/" > <Home /> </Route> */}
-
-          </Switch>
-
-        </Router>
-      )
+    return (
+      <Router >
+        <Header />
+        <Switch>
+          <Route exact path='/' component={Home} />
+          <Route path="/signup" > <SignUp /> </Route>
+          <Route path="/signin" > <SignIn /> </Route>
+          <Route Path="/article/:slug" component={ArticlePage} />
+          <ArticlePage />
+          <Route path="*"> <h1 className="text-center m-10 text-6xl font-semibold"> Page not found </h1> </Route>
+        </Switch>
+      </Router>
+    )
   }
 }
 

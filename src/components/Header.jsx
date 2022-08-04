@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 function Header() {
   return <header>
     <div className="container flex justify-between align-middle py-5 sm:bg-red-200 md:bg-purple-300 lg:bg-yellow-400">
@@ -8,13 +8,13 @@ function Header() {
       <nav>
         <ul className="flex ml-3">
           <li className="text-sm text-gray-100 ml-4 ">
-            <Link to="/"> Home</Link> 
+            <NavLink activeClassName='text-gray-400' to="/" exact> Home</NavLink> 
           </li> 
           <li className="text-sm text-gray-100 ml-4 ">
-            <Link to="/signup" >Sign Up</Link>
+            <NavLink activeClassName='text-gray-400' to="/signup" >Sign Up</NavLink>
           </li>
           <li className="text-sm text-gray-100 ml-4 ">
-            <Link to="/signin" >Sign In</Link>
+            <NavLink activeClassName='text-gray-400' to="/signin" >Sign In</NavLink>
           </li>
         </ul>
       </nav>

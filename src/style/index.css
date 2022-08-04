@@ -2,6 +2,11 @@
 	box-sizing: border-box;
 }
 
+.paginate-active {
+	background-color: greenyellow;
+	color: whitesmoke;
+}
+
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
