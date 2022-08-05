@@ -10,7 +10,8 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isLogedIn: false
+      isLogedIn: false,
+      user: null
     }
   }
 
@@ -19,8 +20,17 @@ class App extends React.Component {
 
   }
 
-  isLogIn = () => {
-    this.setState( { isLogedIn: true } );
+  isLogIn = (userInfo) => {
+    this.setState(
+      {
+        isLogedIn: true,
+        user:
+            {
+              username: userInfo.username,
+              email: userInfo.email,
+              token: userInfo.token
+            }
+      });
   }
 
   render() {
@@ -28,10 +38,10 @@ class App extends React.Component {
       <Router >
         <Header />
         <Switch>
-          <Route exact path='/' component={Home} />
+          <Route exact path='/' children={<Home isLogedIn={this.state.isLogedIn} user={this.state.user} />} />
           <Route path="/signup" > <SignUp /> </Route>
           {/* <Route path="/signin" component={<SignIn />} />  */}
-          <Route path="/signin" children={ this.state.isLogedIn ? <Redirect to="/" /> : <SignIn isLogIn={this.isLogIn}/> } />
+          <Route path="/signin" children={this.state.isLogedIn ? <Redirect to="/" /> : <SignIn isLogIn={this.isLogIn} />} />
           {/* /> </Route> */}
           <Route Path="/article/:slug" component={ArticlePage} />
           <ArticlePage />

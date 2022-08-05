@@ -15,13 +15,12 @@ class ArticleSection extends React.Component {
             activePageIndex: 1,
             articlePerPage: 10,
             tagArticles: [],
-            activeTab: 0,
             error: ""
         }
     }
 
     componentDidMount() {
-        this.setState({ isLoading: true })
+        this.setState({ isLoading: true, articles: null })
         fetch(`https://mighty-oasis-08080.herokuapp.com/api/articles/?limit=${this.state.articlePerPage}`)
             .then((res) => {
                 if (!res.ok) {
@@ -47,9 +46,9 @@ class ArticleSection extends React.Component {
     //     }
     // }
 
-    fetchArticles = async () => {
-        this.setState({ isLoading: true })
-        fetch(`https://mighty-oasis-08080.herokuapp.com/api/articles/?limit=${this.state.articlePerPage}`)
+    fetchArticles = (author) => {
+        this.setState({ isLoading: true, articles: null })
+        fetch(`https://mighty-oasis-08080.herokuapp.com/api/articles/?limit=${this.state.articlePerPage}&author=${author}`)
             .then((res) => {
                 if (!res.ok) {
                     throw new Error(res.statusText)
@@ -84,7 +83,7 @@ class ArticleSection extends React.Component {
     handleFetchOn = () => {
         const limit = this.state.articlePerPage;
         const offset = (this.state.activePageIndex - 1) * limit;
-        this.setState({ isLoading: true })
+        this.setState({ isLoading: true, articles: null })
         fetch(`https://mighty-oasis-08080.herokuapp.com/api/articles/?offset=${offset}&limit=${limit}`)
             .then((res) => {
                 if (!res.ok) {
@@ -103,17 +102,25 @@ class ArticleSection extends React.Component {
             })
     }
 
-    componentDidUpdate( _prevProps, prevState){
-        console.log(_prevProps,prevState)
-        if ( _prevProps.tagSelected !== this.props.tagSelected ){
+    componentDidUpdate(_prevProps, prevState) {
+        console.log(_prevProps, prevState)
+        if (_prevProps.tagSelected !== this.props.tagSelected) {
             this.handleFetchOnTag(this.props.tagSelected)
+        }
+        if ( _prevProps.activeTab !== this.props.activeTab ) {
+            console.log("here")
+            if (  this.props.activeTab === "Your Feed" ){
+                this.fetchArticles(this.props.user.username)
+            } else {
+                this.fetchArticles()
+            }
         }
     }
 
 
-    handleFetchOnTag = ( tag ) => {
-        this.setState({ isLoading: true, articles:null })
-        fetch(`https://mighty-oasis-08080.herokuapp.com/api/articles/?limit=${10}` + ( tag && `&tag=${tag}`))
+    handleFetchOnTag = (tag) => {
+        this.setState({ isLoading: true, articles: null })
+        fetch(`https://mighty-oasis-08080.herokuapp.com/api/articles/?limit=${10}` + (tag && `&tag=${tag}`))
             .then((res) => {
                 if (!res.ok) {
                     throw new Error(res.statusText)
@@ -140,12 +147,13 @@ class ArticleSection extends React.Component {
 
 
     render() {
+        console.log(this.props.user)
         return <>
             {/* <FeedTabs 
             removeTag={this.props.removeTag}
             tagSelected={this.props.tagSelected} /> */}
             <Articles
-               articles={this.state.articles}
+                articles={this.state.articles}
                 error={this.state.error}
                 isLoading={this.state.isLoading}
 

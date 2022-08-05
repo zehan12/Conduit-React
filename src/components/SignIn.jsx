@@ -49,7 +49,7 @@ class SignIn extends React.Component {
             }
 
             if (response.status === 200 && response.ok && data.user.token ) {
-                this.props.isLogIn();
+                this.props.isLogIn( data.user );
                 console.log("switch to login")
             }
             if (!response.ok) {

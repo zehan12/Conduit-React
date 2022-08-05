@@ -13,29 +13,14 @@ class Home extends React.Component {
       tags: [],
       tagSelected: "",
       isTagClicked: false,
-      activeTab: ""
+      activeTab: "",
     }
   }
 
-  // toggleTabs = (index) => {
-  //   this.setState(
-  //     {
-  //       activeTabs: index,
-  //     },
-  //     () => console.log(index, this.state.activeTabs));
-  //   console.log(index,this.state.activeTabs)
-  // }
-
-
   componentDidMount() {
+    this.setState({ activeTab:this.props.isLogedIn ? "Your Feed": "Global Feed" });
     this.fetchTags("https://mighty-oasis-08080.herokuapp.com/api/tags")
-
   }
-
-  // componentDidUpdate() {
-  //   console.log(this.state)
-  // }
-
 
   fetchTags = async (url) => {
     try {
@@ -51,11 +36,12 @@ class Home extends React.Component {
   }
 
   addTag = (e) => {
-    this.setState({ tagSelected: e, isTagClicked: true }, () => console.log("callback", this.state.tagSelected));
+    this.setState({ tagSelected: e}, () => console.log("callback", this.state.tagSelected));
   }
 
-  removeTag = () => {
-    this.setState({ tagSelected: "", isTagClicked: true }, () => console.log("callback", this.state.tagSelected));
+  removeTag = (e) => {
+    console.log(e.target.innerText)
+    this.setState({ tagSelected: "", activeTab: e.target.innerText }, () => console.log("callback", this.state.tagSelected));
   }
 
   render() {
@@ -66,11 +52,16 @@ class Home extends React.Component {
         <section className="container m-7 flex justify-between">
           <div style={{ width: "75%" }}>
             <FeedTabs 
+              isLogedIn={this.props.isLogedIn}
               removeTag={this.removeTag}
               tagSelected={this.state.tagSelected}
+              activeTab={this.state.activeTab}
             />
             <ArticleSection
+              isLogedIn={this.props.isLogedIn}
               tagSelected={this.state.tagSelected}
+              activeTab={this.state.activeTab}
+              user={this.props.user}
             />
           </div>
           <div style={{ width: "23%" }}>
