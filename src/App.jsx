@@ -16,8 +16,20 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    // console.log(this.props.match.params.slug);
+    console.log(this.getCurrentUser())
+  }
 
+  getCurrentUser = () => {
+    // return JSON.parse(localStorage.getItem('user'));
+    const user = JSON.parse(localStorage.getItem('user'));
+    this.setState({ isLogedIn:true,
+      user:{
+        username: user.username,
+        email: user.email,
+        token: user.token
+      }
+    })
+    console.log(user,"user in app")
   }
 
   isLogIn = (userInfo) => {

@@ -49,6 +49,7 @@ class SignIn extends React.Component {
             }
 
             if (response.status === 200 && response.ok && data.user.token ) {
+                localStorage.setItem("user", JSON.stringify(data.user));
                 this.props.isLogIn( data.user );
                 console.log("switch to login")
             }

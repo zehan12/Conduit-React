@@ -22,6 +22,7 @@ class Home extends React.Component {
     this.fetchTags("https://mighty-oasis-08080.herokuapp.com/api/tags")
   }
 
+
   fetchTags = async (url) => {
     try {
       const res = await fetch(url);
