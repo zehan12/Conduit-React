@@ -103,12 +103,10 @@ class ArticleSection extends React.Component {
     }
 
     componentDidUpdate(_prevProps, prevState) {
-        console.log(_prevProps, prevState)
         if (_prevProps.tagSelected !== this.props.tagSelected) {
             this.handleFetchOnTag(this.props.tagSelected)
         }
         if ( _prevProps.activeTab !== this.props.activeTab ) {
-            console.log("here")
             if (  this.props.activeTab === "Your Feed" ){
                 this.fetchArticles(this.props.user.username)
             } else {
@@ -147,7 +145,6 @@ class ArticleSection extends React.Component {
 
 
     render() {
-        console.log(this.props.user)
         return <>
             {/* <FeedTabs 
             removeTag={this.props.removeTag}

@@ -1,10 +1,10 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import url from "../utils/constants"
 
 class SignUp extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.ref = React.createRef()
         this.state = {
             username: "",
@@ -71,10 +71,15 @@ class SignUp extends React.Component {
                 for (const [key, value] of Object.entries(data.errors)) {
                     if (value === "is already taken") count += 1;
                 }
-                if (count === 2){ console.log("go to login") }
+                if (count === 2){
+                    this.props.history.push("/signin")
+                    console.log("go to login") 
+                }
+                console.log(count)
             }
 
             if (response.status === 200 && response.ok) {
+                this.props.history.push("/signin")
                 console.log("switch to login")
             }
             if (!response.ok) {
@@ -91,6 +96,7 @@ class SignUp extends React.Component {
 
     render() {
         let { username, email, password } = this.state.error;
+        console.log(this.props)
         return (
             <div style={{ width: "50%" }} className="text-center container">
                 <h1 className="text-4xl my-2">Sign Up</h1>
@@ -153,4 +159,4 @@ class SignUp extends React.Component {
     }
 }
 
-export default SignUp;
+export default withRouter(SignUp);

@@ -41,17 +41,14 @@ class SignIn extends React.Component {
         }).then(async response => {
             const isJson = response.headers.get('content-type')?.includes('application/json');
             const data = isJson && await response.json();
-            console.log(response);
-            console.log(data, "data");
 
             if (data.errors) {
                 this.setState( { errors: data.errors } )
             }
 
             if (response.status === 200 && response.ok && data.user.token ) {
-                localStorage.setItem("user", JSON.stringify(data.user));
+                localStorage.setItem("user_token", JSON.stringify(data.user.token));
                 this.props.isLogIn( data.user );
-                console.log("switch to login")
             }
             if (!response.ok) {
                 const errors = (data && data.message) || response.status;

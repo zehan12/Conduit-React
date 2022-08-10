@@ -4,12 +4,12 @@ import { Link } from 'react-router-dom'
 
 export default function Articles({ articles, error, isLoading }) {
 
-  if ( !articles ) {
-    return  Array.from(Array(10).keys()).map(() => <SkeletonArticles />)
+  if (!articles) {
+    return Array.from(Array(10).keys()).map(() => <SkeletonArticles />)
   }
   return (
     <div className="border-2  border-fuchsia-400">
-      
+
       {error && <p className='p-3 text-l font-mono'>{error}</p>}
       {
         isLoading ? Array.from(Array(10).keys()).map(() => <SkeletonArticles />)
