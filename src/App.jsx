@@ -7,6 +7,7 @@ import SignIn from "./components/SignIn"
 import ArticlePage from "./components/ArticlePage";
 import url from "./utils/constants"
 import NewPost from "./components/NewPost";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 class App extends React.Component {
   constructor(props) {
@@ -76,7 +77,9 @@ class App extends React.Component {
   render() {
     return (
       <Router >
+        <ErrorBoundary>
         <Header isLogedIn={this.state.isLogedIn} user={this.state.user} />
+        </ErrorBoundary>
         <Switch>
           <Route exact path='/' children={<Home isLogedIn={this.state.isLogedIn} user={this.state.user} />} />
           <Route path="/signup" > <SignUp /> </Route>
@@ -84,7 +87,6 @@ class App extends React.Component {
             <Route path="/settings"> "setting" </Route>
             <Route path="/editor"> <NewPost /> </Route>
             <Route path="/@profile">:profile:</Route>
-
           <Route Path="/article/:slug" component={ArticlePage} />
           <Route path="*"> <h1 className="text-center m-10 text-6xl font-semibold"> Page not found </h1> </Route>
         </Switch>

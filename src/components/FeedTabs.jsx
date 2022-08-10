@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom";
+import { propTypes } from "prop-types";
 
 function FeedTabs(props) {
     return <nav className="flex p-2 border ">
@@ -31,5 +32,15 @@ function FeedTabs(props) {
         }
     </nav>
 }
+
+// FeedTabs.defaultProp = {
+    
+// }
+
+// FeedTabs.prototype = {
+//     tagSelected: propTypes.string,
+//     activeTab: propTypes.string,
+//     removeTag: propTypes.func
+// }
 
 export default FeedTabs;
