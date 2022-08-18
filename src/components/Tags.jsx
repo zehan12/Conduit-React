@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from 'prop-types';
 
 function Tags(props) {
     return (
@@ -15,6 +16,11 @@ function Tags(props) {
             }
         </div>
     )
+}
+
+Tags.propTypes = {
+    error: PropTypes.string,
+    tags: PropTypes.array
 }
 
 

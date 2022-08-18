@@ -3,6 +3,7 @@ import Hero from "./Hero";
 import ArticleSection from "./ArticleSection";
 import Tags from "./Tags";
 import FeedTabs from "./FeedTabs";
+import PropTypes from "prop-types";
 
 
 class Home extends React.Component {
@@ -12,7 +13,6 @@ class Home extends React.Component {
       error: "",
       tags: [],
       tagSelected: "",
-      isTagClicked: false,
       activeTab: "",
     }
   }
@@ -46,14 +46,12 @@ class Home extends React.Component {
   }
 
   render() {
-
     return (
       <>
         <Hero />
         <section className="container m-7 flex justify-between">
           <div style={{ width: "75%" }}>
             <FeedTabs 
-              isLogedIn={this.props.isLogedIn}
               removeTag={this.removeTag}
               tagSelected={this.state.tagSelected}
               activeTab={this.state.activeTab}
@@ -76,6 +74,13 @@ class Home extends React.Component {
       </>
     )
   }
+
 }
+
+Home.propTypes = {
+  isLogedIn: PropTypes.bool,
+  user: PropTypes.object
+}
+
 
 export default Home;

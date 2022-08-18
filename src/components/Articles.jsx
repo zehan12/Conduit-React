@@ -25,7 +25,7 @@ export default function Articles({ articles, error, isLoading }) {
             </div>
             <p> {String(new Date(article.createdAt)).slice(0, 16)} </p>
             <h2>{article.title}</h2>
-            <p> {article.description.substring(0, 200)} </p>
+            <p> { article.description && article.description.substring(0, 200)} </p>
             <Link to={`/article/${article.slug}`}> Read more... </Link>
             <div>{article.tagList}</div>
           </article>)

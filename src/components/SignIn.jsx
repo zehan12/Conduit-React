@@ -47,7 +47,7 @@ class SignIn extends React.Component {
             }
 
             if (response.status === 200 && response.ok && data.user.token ) {
-                localStorage.setItem("user_token", JSON.stringify(data.user.token));
+                localStorage.setItem("user_token", data.user.token);
                 this.props.isLogIn( data.user );
             }
             if (!response.ok) {

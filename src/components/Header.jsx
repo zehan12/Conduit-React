@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import { MdSettings } from 'react-icons/md'
 import { FiEdit } from 'react-icons/fi'
+import PropTypes from 'prop-types';
 
 function Header({ isLogedIn, user }) {
   return <header>
@@ -55,5 +56,9 @@ function Header({ isLogedIn, user }) {
   </header>
 }
 
+Header.propTypes = {
+  isLogedIn: PropTypes.bool,
+  user: PropTypes.object
+}
 
 export default Header;

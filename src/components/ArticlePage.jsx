@@ -12,9 +12,8 @@ class ArticlePage extends Component {
     }
 
     componentDidMount() {
-        console.log(this.props);
-        const slug = this.props.location.pathname.split("/")[2];
-        console.log(url.base + "/articles" + slug)
+        const slug = this.props.match.params.slug;
+        console.log(url.base + "/articles/" + slug)
         fetch(`${url.globalFeed + "/" + slug}`).then((res) => res.json()).then((data) => this.setState({article:data.article}))
         console.log(this.state)
     }

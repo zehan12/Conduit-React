@@ -8,27 +8,46 @@ import ArticlePage from "./components/ArticlePage";
 import url from "./utils/constants"
 import NewPost from "./components/NewPost";
 import ErrorBoundary from "./components/ErrorBoundary";
+import { UserProvider } from "./components/userContext";
+import Settings from "./components/Settings";
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isLogedIn: false,
-      user: null
-    }
+
+const ProtectedRoutes = ( {isAuth ,children, ...rest }) =>{
+    return  (
+      <Route { ...rest } render={()=>{
+        return isAuth ? children : <Redirect to="/signin" /> 
+      }} />
+    )
   }
 
+class App extends React.Component {
+   state = {
+      isLogedIn: false,
+      user: null,
+      isLoading: true
+    }
+
   componentDidMount() {
-    if ( !this.state.user && localStorage.getItem("user_token")) {
+    console.log("iside CMD",this.state.user,localStorage.getItem("user_token"))
+    
+    if (!this.state.user && localStorage.getItem("user_token")) {
+      console.log("is calling")
       this.getCurrentUser()
+    } else {
+      this.setState( {isLoading:false} )
     }
   }
 
   getCurrentUser = async () => {
-    const token = JSON.parse(localStorage.getItem('user_token'));
+    try
+    {
+    const token = localStorage.getItem('user_token');
+    console.log(token,"token")
     let user = await this.isUserAuthorised(token)
+    console.log(user)
     this.setState({
       isLogedIn: true,
+      isLoading: false,
       user: {
         username: user.username,
         email: user.email,
@@ -37,6 +56,10 @@ class App extends React.Component {
       }
     })
     console.log(user, "user in app")
+  } catch (err) {
+    this.setState({isLoading: false})
+    console.log(err,"err")
+  }
   }
 
   isUserAuthorised = async (token) => {
@@ -56,6 +79,7 @@ class App extends React.Component {
     this.setState(
       {
         isLogedIn: true,
+        isLoading: false,
         user:
         {
           username: userInfo.username,
@@ -66,30 +90,38 @@ class App extends React.Component {
       });
   }
 
-  // ProtectedRoutes = ( { children, ...rest }) =>{
-  //   return  (
-  //     <Route { ...rest } render={()=>{
-  //       return this.state.isLogedIn ? children : <Redirect to="/signin" /> 
-  //     }} />
-  //   )
-  // }
+
 
   render() {
+    if ( this.state.isLoading ) {
+      return <h1>Loading ...</h1>
+    }
     return (
       <Router >
         <ErrorBoundary>
-        <Header isLogedIn={this.state.isLogedIn} user={this.state.user} />
+          <Header isLogedIn={this.state.isLogedIn} user={this.state.user} />
         </ErrorBoundary>
-        <Switch>
-          <Route exact path='/' children={<Home isLogedIn={this.state.isLogedIn} user={this.state.user} />} />
-          <Route path="/signup" > <SignUp /> </Route>
-          <Route path="/signin" children={this.state.isLogedIn ? <Redirect to="/" /> : <SignIn isLogIn={this.isLogIn} />} />
-            <Route path="/settings"> "setting" </Route>
-            <Route path="/editor"> <NewPost /> </Route>
-            <Route path="/@profile">:profile:</Route>
-          <Route Path="/article/:slug" component={ArticlePage} />
-          <Route path="*"> <h1 className="text-center m-10 text-6xl font-semibold"> Page not found </h1> </Route>
-        </Switch>
+
+        <ErrorBoundary>
+          <UserProvider value={this.state } >
+          <Switch>
+
+            <Route exact path='/' children={<Home isLogedIn={this.state.isLogedIn} user={this.state.user} />} />
+            <Route path="/article/:slug" component={ArticlePage} />
+
+            <Route path="/signup" > <SignUp /> </Route>
+            <Route path="/signin" children={this.state.isLogedIn ? <Redirect to="/" /> : <SignIn isLogIn={this.isLogIn} />} />
+
+            <ProtectedRoutes isAuth={this.state.isLogedIn} path="/settings"> <Settings /> </ProtectedRoutes>
+            <ProtectedRoutes isAuth={this.state.isLogedIn} path="/editor"> <NewPost /> </ProtectedRoutes>
+            <ProtectedRoutes isAuth={this.state.isLogedIn} path="/@profile">:profile:</ProtectedRoutes>
+
+            <Route path="*" children={ <h1 className="text-center m-10 text-6xl font-semibold"> Page not found </h1>}/>
+
+          </Switch>
+          </UserProvider>
+        </ErrorBoundary>
+
       </Router>
     )
   }
