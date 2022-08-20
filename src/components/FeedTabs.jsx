@@ -42,7 +42,7 @@ class FeedTabs extends React.Component {
   }
 }
 
-FeedTabs.PropoTypes = {
+FeedTabs.propTypes = {
   tagSelected: PropTypes.string,
   activeTab: PropTypes.string,
   removeTag: PropTypes.func

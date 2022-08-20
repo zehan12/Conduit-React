@@ -32,7 +32,7 @@ function Header({ isLogedIn, user }) {
                 </li>
 
                 <li className="text-sm text-gray-100 ml-4 ">
-                  <NavLink className="flex align-middle justify-evenly" activeClassName='text-gray-400' to={`/@${user.username}`} >
+                  <NavLink className="flex align-middle justify-evenly" activeClassName='text-gray-400'  to={ { pathname :`/profile/${ user.username }`} } >
                     <img className='w-7 h-7 rounded-3xl mr-2' src={user.image} alt={user.username} />
                     <p>{user.username}</p>
                   </NavLink>

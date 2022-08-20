@@ -45,15 +45,15 @@ class NewPost extends React.Component {
 			const data = await res.json();
 
 			//! any error occurs
-            if ( data.errors ) this.setState({ message: data.errors.message } );
+			if (data.errors) this.setState({ message: data.errors.message });
 
 			//! resquset success redirect to  home page
-            if ( res.status === 200 && res.ok ) this.props.history.push("/");
+			if (res.status === 200 && res.ok) this.props.history.push("/");
 
 			//! error from api
-            if ( !res.ok ) return Promise.reject( ( data && data.message ) || res.status );
+			if (!res.ok) return Promise.reject((data && data.message) || res.status);
 
-			console.log("Result:",data)
+			console.log("Result:", data)
 		} catch (error) {
 			console.log(error)
 		}
@@ -79,7 +79,7 @@ class NewPost extends React.Component {
 	render() {
 		let { title, description, body } = this.state.errors;
 		return (
-			<div className="container bg-amber-200">
+			<div className="mx-auto bg-amber-200 " style={{ width: "70%" }}>
 				<h3 className="text-red-600 font-mono text-xl" >
 					{
 						title ? `title:${title}` :
@@ -88,11 +88,12 @@ class NewPost extends React.Component {
 					}
 				</h3>
 				{this.state.message && <h2 className="text-red-700 text-3xl">{this.state.message}</h2>}
-				<form onSubmit={this.handleSubmit} className="" >
+				<form onSubmit={this.handleSubmit} className="bg-red-300 p-5">
 					<input onChange={this.handelChange}
 						value={this.state.name}
 						name="title" type="text"
 						placeholder="Article Title"
+						className="w-full h-10 pl-3 mb-4"
 					// required
 					/>
 					<br />
@@ -101,13 +102,15 @@ class NewPost extends React.Component {
 						name="description"
 						type="text"
 						placeholder="What's this article about?"
+						className="w-full h-10 pl-3 py-2 mb-4"
 					// required
 					/>
 					<br />
 					<textarea onChange={this.handelChange}
 						value={this.state.body}
 						name="body"
-						rows="10" cols="100"
+						// rows="10" cols="10"
+						className="w-full h-48 pl-3 py-2 mb-4"
 						placeholder="Write your article ( in Markdown )"
 					// required
 					/>
@@ -117,9 +120,10 @@ class NewPost extends React.Component {
 						value={this.state.tags}
 						name="tags" type="text"
 						placeholder="Enter your tags"
+						className="w-full h-10 pl-3 py-2 mb-1"
 					/>
 					<br />
-					<div className="flex border-2">
+					<div className="flex">
 						{
 							this.state.tagList &&
 							this.state.tagList.map((ele) =>
@@ -131,7 +135,12 @@ class NewPost extends React.Component {
 						}
 					</div>
 					<br />
-					<button className="bg-primary px-6 rounded text-white h-10 bg-green-700"
+					<button
+						className="text-right 
+							 my-2 px-6 rounded
+							 text-white h-10
+							 bg-green-700 btn 
+							 btn-small btn-secondary"
 						type="submit"
 						disabled={
 							title ||

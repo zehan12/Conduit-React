@@ -11,6 +11,7 @@ export default function Articles({ articles, error, isLoading }) {
     <div className="border-2  border-fuchsia-400">
 
       {error && <p className='p-3 text-l font-mono'>{error}</p>}
+      { articles.length === 0 ? <h1>No articles are here... yet.</h1> : "" }
       {
         isLoading ? Array.from(Array(10).keys()).map(() => <SkeletonArticles />)
           :

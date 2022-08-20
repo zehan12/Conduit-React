@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch, Redirect, withRouter } from "react-router-dom";
 import Header from "./components/Header";
 import Home from "./components/Home";
 import SignUp from "./components/SignUp"
@@ -10,56 +10,57 @@ import NewPost from "./components/NewPost";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { UserProvider } from "./components/userContext";
 import Settings from "./components/Settings";
+import Profile from "./components/Profile";
 
 
-const ProtectedRoutes = ( {isAuth ,children, ...rest }) =>{
-    return  (
-      <Route { ...rest } render={()=>{
-        return isAuth ? children : <Redirect to="/signin" /> 
-      }} />
-    )
-  }
+const ProtectedRoutes = ({ isAuth, children, ...rest }) => {
+  return (
+    <Route {...rest} render={() => {
+      return isAuth ? children : <Redirect to="/signin" />
+    }} />
+  )
+}
 
 class App extends React.Component {
-   state = {
-      isLogedIn: false,
-      user: null,
-      isLoading: true
-    }
+  state = {
+    isLogedIn: false,
+    user: null,
+    isLoading: true
+  }
 
   componentDidMount() {
-    console.log("iside CMD",this.state.user,localStorage.getItem("user_token"))
-    
+    console.log("iside CMD", this.state.user, localStorage.getItem("user_token"))
+
     if (!this.state.user && localStorage.getItem("user_token")) {
       console.log("is calling")
       this.getCurrentUser()
     } else {
-      this.setState( {isLoading:false} )
+      this.setState({ isLoading: false })
     }
   }
 
   getCurrentUser = async () => {
-    try
-    {
-    const token = localStorage.getItem('user_token');
-    console.log(token,"token")
-    let user = await this.isUserAuthorised(token)
-    console.log(user)
-    this.setState({
-      isLogedIn: true,
-      isLoading: false,
-      user: {
-        username: user.username,
-        email: user.email,
-        image: user.image,
-        token: user.token
-      }
-    })
-    console.log(user, "user in app")
-  } catch (err) {
-    this.setState({isLoading: false})
-    console.log(err,"err")
-  }
+    try {
+      const token = localStorage.getItem('user_token');
+      console.log(token, "token")
+      let user = await this.isUserAuthorised(token)
+      console.log(user)
+      this.setState({
+        isLogedIn: true,
+        isLoading: false,
+        user: {
+          username: user.username,
+          email: user.email,
+          image: user.image,
+          bio: user.bio,
+          token: user.token
+        }
+      })
+      console.log(user, "user in app")
+    } catch (err) {
+      this.setState({ isLoading: false })
+      console.log(err, "err")
+    }
   }
 
   isUserAuthorised = async (token) => {
@@ -85,17 +86,42 @@ class App extends React.Component {
           username: userInfo.username,
           email: userInfo.email,
           image: userInfo.image,
+          bio: userInfo.bio,
           token: userInfo.token,
         }
       });
   }
 
+  updateUser = (user) => {
+    console.log(user, "updateUSER")
+    this.setState({
+      user:
+      {
+        username: user.username,
+        email: user.email,
+        image: user.image,
+        bio: user.bio,
+        token: user.token
+      }
+    })
+  }
 
+handleLogout = () => {
+  console.log("OH ON MY Token", localStorage['user_token'])
+  localStorage.removeItem('user_token');
+  this.setState({
+    isLogedIn: false,
+    user: null
+  })
+} 
 
   render() {
-    if ( this.state.isLoading ) {
+    if (this.state.isLoading) {
       return <h1>Loading ...</h1>
     }
+    const { location  } = this.props
+    console.log("OH NO MY LOCATION", location)
+    console.log("OH NO MY PROPS",this.props)
     return (
       <Router >
         <ErrorBoundary>
@@ -103,22 +129,26 @@ class App extends React.Component {
         </ErrorBoundary>
 
         <ErrorBoundary>
-          <UserProvider value={this.state } >
-          <Switch>
+          <UserProvider value={this.state} >
+            <Switch>
 
-            <Route exact path='/' children={<Home isLogedIn={this.state.isLogedIn} user={this.state.user} />} />
-            <Route path="/article/:slug" component={ArticlePage} />
+              <Route exact path='/' children={<Home isLogedIn={this.state.isLogedIn} user={this.state.user} />} />
+              <Route path="/article/:slug" component={ArticlePage} />
 
-            <Route path="/signup" > <SignUp /> </Route>
-            <Route path="/signin" children={this.state.isLogedIn ? <Redirect to="/" /> : <SignIn isLogIn={this.isLogIn} />} />
+              <Route path="/signup" > <SignUp /> </Route>
+              <Route path="/signin" children={this.state.isLogedIn ? <Redirect to="/" /> : <SignIn isLogIn={this.isLogIn} />} />
+              
 
-            <ProtectedRoutes isAuth={this.state.isLogedIn} path="/settings"> <Settings /> </ProtectedRoutes>
-            <ProtectedRoutes isAuth={this.state.isLogedIn} path="/editor"> <NewPost /> </ProtectedRoutes>
-            <ProtectedRoutes isAuth={this.state.isLogedIn} path="/@profile">:profile:</ProtectedRoutes>
 
-            <Route path="*" children={ <h1 className="text-center m-10 text-6xl font-semibold"> Page not found </h1>}/>
+              <ProtectedRoutes isAuth={this.state.isLogedIn} path="/settings"> <Settings updateUser={this.updateUser} handleLogout={this.handleLogout} /> </ProtectedRoutes>
+              <ProtectedRoutes isAuth={this.state.isLogedIn} path="/editor"> <NewPost /> </ProtectedRoutes>
+              {/* <ProtectedRoutes isAuth={this.state.isLogedIn} path={location.pathname} exact > <Profile /> </ProtectedRoutes> */}
 
-          </Switch>
+              <Route path="/profile/:username" exact > <Profile /> </Route>
+              <Route path="/profile/:username/favorites" exact > <Profile /> </Route>
+              <Route path="*" children={<h1 className="text-center m-10 text-6xl font-semibold"> Page not found </h1>} />
+
+            </Switch>
           </UserProvider>
         </ErrorBoundary>
 
@@ -131,5 +161,5 @@ class App extends React.Component {
 
 
 
-export default App;
+export default withRouter(App);
 
