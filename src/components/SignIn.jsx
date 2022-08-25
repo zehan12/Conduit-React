@@ -1,7 +1,9 @@
 import React from "react";
 import url from "../utils/constants"
 import { Link } from "react-router-dom"
- 
+
+
+
 class SignIn extends React.Component {
     constructor(props) {
         super(props);
@@ -9,7 +11,7 @@ class SignIn extends React.Component {
         this.password = React.createRef();
         this.state = {
             formErrors: [],
-            errors:""
+            errors: ""
         };
     }
 
@@ -43,12 +45,12 @@ class SignIn extends React.Component {
             const data = isJson && await response.json();
 
             if (data.errors) {
-                this.setState( { errors: data.errors } )
+                this.setState({ errors: data.errors })
             }
 
-            if (response.status === 200 && response.ok && data.user.token ) {
+            if (response.status === 200 && response.ok && data.user.token) {
                 localStorage.setItem("user_token", data.user.token);
-                this.props.isLogIn( data.user );
+                this.props.isLogIn(data.user);
             }
             if (!response.ok) {
                 const errors = (data && data.message) || response.status;
@@ -63,8 +65,8 @@ class SignIn extends React.Component {
 
     handleBlur = (e) => {
         console.log(this.email.current.value);
-      };
-    
+    };
+
 
     handleFormValidation = (email, password) => {
         const formErrors = [];
@@ -85,9 +87,10 @@ class SignIn extends React.Component {
         const { formErrors } = this.state;
         console.log(this.props)
         return (
-            <div style={{ width: "50%" }} className="text-center container">
+            <div style={{ width: "50%" }} className="text-center container" data-testid="mainDiv" >
                 <h1 className="text-4xl my-2">Sign In</h1>
                 <Link to="/signup" className="text-green-400">Need an account?</Link>
+
                 <form onSubmit={this.handleFormSubmit}>
                     {/* {this.state.errors && <p className="text-red">{this.state.errors}</p>} */}
                     {formErrors.map(error => <p key={error}>{error}</p>)}
@@ -101,19 +104,19 @@ class SignIn extends React.Component {
                         type="text" placeholder="Email"
                     />
                     <input ref={this.password}
-                                onBlur={(e)=>this.handleBlur(e)}
+                        onBlur={(e) => this.handleBlur(e)}
                         className="shadow appearance-none border 
                                          rounded w-full py-3 px-3 my-3
                                          text-gray-700 leading-tight 
                                          focus:outline-blue-300
                                          focus:shadow-outline"
-                        type="password" placeholder="password"
+                        type="password" placeholder="Password"
                     />
                     <button className="relative left-48 my-2
                                             text-white bg-green-500
                                             py-2 px-4 rounded text-xl"
-                                    //  disabled={formErrors.length >= 1} 
-                            >
+                    //  disabled={formErrors.length >= 1} 
+                    >
                         Sign in
                     </button>
                 </form>

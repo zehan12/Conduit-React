@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
 import { Component } from "react"
 import url from "../utils/constants"
+import { UserContext } from "./userContext";
 
 class ArticlePage extends Component {
+    static contextType = UserContext;
     constructor(props) {
         super(props);
         this.state = {
@@ -13,15 +15,25 @@ class ArticlePage extends Component {
 
     componentDidMount() {
         const slug = this.props.match.params.slug;
-        console.log(url.base + "/articles/" + slug)
-        fetch(`${url.globalFeed + "/" + slug}`).then((res) => res.json()).then((data) => this.setState({article:data.article}))
-        console.log(this.state)
+        this.handelArticle(slug)
     }
 
 
+    handelArticle = async ( slug ) => {
+        const res = await fetch( url.globalFeed + "/"  + slug  )
+        const data = await res.json();
+        console.log(data,slug)
+        if ( data.article )  this.setState({article:data.article})
+        const res1 = await fetch( url.globalFeed + "/"  + slug+"/comments"  )
+        const data1 = await res.json();
+        console.log(data1)
+
+    }
 
 
     render() {
+        console.log(this.state)
+        // let { title, description, body,  } = title.state.article
         return (
             <>
                 <div className="flex flex-col bg-zinc-700 px-48 h-40">
@@ -56,7 +68,7 @@ class ArticlePage extends Component {
 
                 <div className="containe bg-red-500">
                     <div className="mx-auto bg-green-300" style={{ width: "50%" }}>
-                        <p className="text-left"> <Link> Sign in</Link> or <Link>sign up</Link> to add comments on this article.</p>
+                       { !this.context.isLogedIn && <p className="text-left"> <Link> Sign in</Link> or <Link>sign up</Link> to add comments on this article.</p> }
 
                     </div>
 
@@ -71,6 +83,7 @@ class ArticlePage extends Component {
                         </div>
                     </div>
                 </div>
+            
             </>
 
         )

@@ -46,6 +46,10 @@ class ArticleSection extends React.Component {
     //     }
     // }
 
+    handleArticleFetch = async ( url,  ) => {
+
+    }
+
     fetchArticles = (author) => {
         this.setState({ isLoading: true, articles: null })
         fetch(`https://mighty-oasis-08080.herokuapp.com/api/articles/?limit=${this.state.articlePerPage}&author=${author}`)

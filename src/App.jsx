@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Switch, Redirect, withRouter } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch, Redirect, withRouter, BrowserRouter } from "react-router-dom";
 import Header from "./components/Header";
 import Home from "./components/Home";
 import SignUp from "./components/SignUp"
@@ -123,6 +123,7 @@ handleLogout = () => {
     console.log("OH NO MY LOCATION", location)
     console.log("OH NO MY PROPS",this.props)
     return (
+
       <Router >
         <ErrorBoundary>
           <Header isLogedIn={this.state.isLogedIn} user={this.state.user} />

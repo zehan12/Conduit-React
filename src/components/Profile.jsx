@@ -53,7 +53,7 @@ class Profile extends React.Component {
     handleArticle = async (profileUser, key) => {
         const res = await fetch(url.globalFeed + `?${key}=${profileUser}`);
         const data = await res.json();
-        if ( data.articles ) this.setState( { articles: data.articles } );
+        if (data.articles) this.setState({ articles: data.articles });
         console.log(data)
     }
 
@@ -123,26 +123,38 @@ class Profile extends React.Component {
 
             {/* //*prdfile Posts  */}
             <div className="container flex flex-col" style={{ width: "75%" }}>
-          { 
-             this.state.articles === null ? <h3>OH NO MY ARTICLES!!!</h3> :
-             this.state.articles.map((article) => <article key={article.slug}>
-            <img className="w-10 h-10 rounded-3xl" src={article.author.image || "./images/profile.png"} alt="article.author.username" />
-            <h3 className="text-green-500 hover:underline hover:text-green-700 "> {article.author.username} </h3>
-            <div
-              className=" border-green-400 rounded text-green-500 flex w-12 align-center
+                {
+                    this.state.articles === null ? <h3>OH NO MY ARTICLES!!!</h3> :
+                        this.state.articles.map((article) => <article key={article.slug}>
+                            <div className="flex justify-between">
+                                <div className="flex" >
+                                    <div>
+                                        <img className="w-10 h-10 rounded-3xl" src={article.author.image || "./images/profile.png"} alt="article.author.username" />
+                                    </div>
+                                    <div className="bg-red-500 ml-2">
+                                        <h3 className="text-green-500 hover:underline hover:text-green-700 "> {article.author.username} </h3>
+                                        <p> {String(new Date(article.createdAt)).slice(0, 16)} </p>
+                                    </div>
+                                </div>
+
+                                <div
+                                    className=" border-green-400 rounded text-green-500 flex w-12 align-center
                                     hover:text-white hover:bg-green-400">
-              {/* <BsHeartFill className="text-green-600 m-1" /> */}
-              <div> {article.favoritesCount} </div>
+                                    {/* <BsHeartFill className="text-green-600 m-1" /> */}
+                                    <div>{article.favoritesCount} </div>
+                                </div>
+                            </div>
+                            <h2 className="text-2xl">{article.title}</h2>
+                            <p className="text-xl text-slate-400"> {article.description && article.description.substring(0, 200)} </p>
+                            <div className="flex justify-between">
+                            <Link to={`/article/${article.slug}`}> Read more... </Link>
+                            <div>{article.tagList}</div>
+                            </div>
+                            {/* <div className="border-black"></div> */}
+                        </article>)
+                }
             </div>
-            <p> {String(new Date(article.createdAt)).slice(0, 16)} </p>
-            <h2>{article.title}</h2>
-            <p> { article.description && article.description.substring(0, 200)} </p>
-            <Link to={`/article/${article.slug}`}> Read more... </Link>
-            <div>{article.tagList}</div>
-          </article>)
-          }
-          </div>
-    
+
         </>
         )
     }
