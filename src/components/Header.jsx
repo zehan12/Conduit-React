@@ -3,9 +3,22 @@ import { MdSettings } from 'react-icons/md'
 import { FiEdit } from 'react-icons/fi'
 import PropTypes from 'prop-types';
 
+
+// function checkAuthenication ( state ) {
+//   do {
+//      if ( state ) {
+//       return <h1>hello</h1>
+//      } else {
+//       return <h1>not hell0</h1>
+//      }
+//   }
+// }
 function Header({ isLogedIn, user }) {
+
+
+
   return <header>
-    <div className="container flex justify-between align-middle py-5 sm:bg-red-200 md:bg-purple-300 lg:bg-yellow-400">
+    <div className="container flex justify-between align-middle py-5 sm:bg-red-200 md:bg-purple-300 lg:bg-blue-700">
       <li className="list-none">
         <strong className="text-green-400 text-2xl">Conduit</strong>
       </li>
@@ -14,6 +27,7 @@ function Header({ isLogedIn, user }) {
           <li className="text-sm text-gray-100 ml-4 ">
             <NavLink activeClassName='text-gray-400' to="/" exact> Home</NavLink>
           </li>
+
           {
             isLogedIn ?
               <>

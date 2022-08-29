@@ -43,26 +43,23 @@ class Profile extends React.Component {
             },
         })
         const data = await res.json()
-        console.log(data.profile)
         if (!res.ok) return Promise.reject('Unable to fetch profile!');
         if (data.profile && res.ok && res.status === 200) return this.setState({ viewProfile: data.profile }, () => console.log(this.state.viewProfile, "p"));
         if (data.error) this.setState({ error: data.error });
-        console.log(this.state)
     }
 
     handleArticle = async (profileUser, key) => {
         const res = await fetch(url.globalFeed + `?${key}=${profileUser}`);
         const data = await res.json();
         if (data.articles) this.setState({ articles: data.articles });
-        console.log(data)
     }
 
     followAndUnfollowUser = async (user, following) => {
         const method = following === true ? "DELETE" : "POST";
         const res = await fetch(url.userProfiles + "/" + user + "/follow", { method, headers: { 'Content-Type': 'application/json', Authorization: `Token ${localStorage["user_token"]}` } });
         const data = await res.json();
-        const profile = { ...this.state.viewProfile };
-        profile.following = data.profile.following;
+        const profile = { ...this.state.viewProfile };//need to know
+        profile.following = data.profile.following;// need to know
         this.setState({ viewProfile: profile });
     }
 
@@ -80,9 +77,6 @@ class Profile extends React.Component {
     }
 
     render() {
-        console.log("OH NO MY PROPS", this.props)
-        console.log("OH NO MY CONTEXT", this.context)
-        console.log("OH NO MY STATE", this.state)
         return (<>
 
             {/* //* Profile Hero */}
@@ -96,11 +90,9 @@ class Profile extends React.Component {
 
 
                         : (this.context.isLogedIn && this.loginUser !== this.user) ? <button
-                            className="border-2 p-2" onClick={(e) => this.followAndUnfollowUser(this.user, this.state.viewProfile.following)}>
+                            className="border-2 p-2" onClick={() => this.followAndUnfollowUser(this.user, this.state.viewProfile.following)}>
                             {this.state.viewProfile.following ? "unfollow" : "follow"
                             }</button>
-
-
                             : <button className="border-2 p-2 bg-red-800 text-white cursor-not-allowed hover:bg-purple-400 text-xs">Login to Follow {this.user}</button>
 
                 }
@@ -123,6 +115,7 @@ class Profile extends React.Component {
 
             {/* //*prdfile Posts  */}
             <div className="container flex flex-col" style={{ width: "75%" }}>
+
                 {
                     this.state.articles === null ? <h3>OH NO MY ARTICLES!!!</h3> :
                         this.state.articles.map((article) => <article key={article.slug}>
@@ -147,10 +140,10 @@ class Profile extends React.Component {
                             <h2 className="text-2xl">{article.title}</h2>
                             <p className="text-xl text-slate-400"> {article.description && article.description.substring(0, 200)} </p>
                             <div className="flex justify-between">
-                            <Link to={`/article/${article.slug}`}> Read more... </Link>
-                            <div>{article.tagList}</div>
+                                <Link to={`/article/${article.slug}`}> Read more... </Link>
+                                <div>{article.tagList}</div>
                             </div>
-                            {/* <div className="border-black"></div> */}
+                            <div className="border-black"></div>
                         </article>)
                 }
             </div>

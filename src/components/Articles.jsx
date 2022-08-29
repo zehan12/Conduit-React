@@ -1,6 +1,7 @@
 import { BsHeartFill } from 'react-icons/bs'
 import SkeletonArticles from "../skeletons/SkeletonArticles"
 import { Link } from 'react-router-dom'
+import React from 'react'
 
 export default function Articles({ articles, error, isLoading }) {
 
@@ -15,7 +16,7 @@ export default function Articles({ articles, error, isLoading }) {
       {
         isLoading ? Array.from(Array(10).keys()).map(() => <SkeletonArticles />)
           :
-          articles.map((article) => <article key={article.slug}>
+          React.Children.toArray(articles.map((article) => <article>
             <img className="w-10 h-10 rounded-3xl" src={article.author.image || "./images/profile.png"} alt="article.author.username" />
             <h3 className="text-green-500 hover:underline hover:text-green-700 "> {article.author.username} </h3>
             <div
@@ -29,7 +30,7 @@ export default function Articles({ articles, error, isLoading }) {
             <p> { article.description && article.description.substring(0, 200)} </p>
             <Link to={`/article/${article.slug}`}> Read more... </Link>
             <div>{article.tagList}</div>
-          </article>)
+          </article>))
       }
     </div>
 
