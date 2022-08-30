@@ -29,22 +29,32 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    console.log("iside CMD", this.state.user, localStorage.getItem("user_token"))
+    // console.log("iside CMD", this.state.user, localStorage.getItem("user_token"))
+    console.log("componentDidMount")
 
     if (!this.state.user && localStorage.getItem("user_token")) {
-      console.log("is calling")
+      // console.log("is calling")
       this.getCurrentUser()
     } else {
       this.setState({ isLoading: false })
     }
   }
 
+  // static getDerivedStateFromProps(props, state) { console.log("getDerivedStateFromProps") }
+  // shouldComponentUpdate() { console.log("shouldComponentUpdate") }
+  // componentDidUpdate() { console.log("componentDidUpdate") }
+  // getSnapshotBeforeUpdate() { console.log("getSnapshotBeforeUpdate") }
+  // componentWillUnmount() { console.log("componentWillUnmount") }
+  // static getDerivedStateFromError() { console.log("getDerivedStateFromError") }
+  // componentDidCatch() { console.log("componentDidCatch") }
+
+
   getCurrentUser = async () => {
     try {
       const token = localStorage.getItem('user_token');
-      console.log(token, "token")
+      // console.log(token, "token")
       let user = await this.isUserAuthorised(token)
-      console.log(user)
+      // console.log(user)
       this.setState({
         isLogedIn: true,
         isLoading: false,
@@ -56,7 +66,7 @@ class App extends React.Component {
           token: user.token
         }
       })
-      console.log(user, "user in app")
+      // console.log(user, "user in app")
     } catch (err) {
       this.setState({ isLoading: false })
       console.log(err, "err")
@@ -93,7 +103,7 @@ class App extends React.Component {
   }
 
   updateUser = (user) => {
-    console.log(user, "updateUSER")
+    // console.log(user, "updateUSER")
     this.setState({
       user:
       {
@@ -106,22 +116,20 @@ class App extends React.Component {
     })
   }
 
-handleLogout = () => {
-  console.log("OH ON MY Token", localStorage['user_token'])
-  localStorage.removeItem('user_token');
-  this.setState({
-    isLogedIn: false,
-    user: null
-  })
-} 
+  handleLogout = () => {
+    // console.log("OH ON MY Token", localStorage['user_token'])
+    localStorage.removeItem('user_token');
+    this.setState({
+      isLogedIn: false,
+      user: null
+    })
+  }
 
   render() {
     if (this.state.isLoading) {
       return <h1>Loading ...</h1>
     }
-    const { location  } = this.props
-    console.log("OH NO MY LOCATION", location)
-    console.log("OH NO MY PROPS",this.props)
+    // const { location  } = this.props
     return (
 
       <Router >
@@ -138,7 +146,7 @@ handleLogout = () => {
 
               <Route path="/signup" > <SignUp /> </Route>
               <Route path="/signin" children={this.state.isLogedIn ? <Redirect to="/" /> : <SignIn isLogIn={this.isLogIn} />} />
-              
+
 
 
               <ProtectedRoutes isAuth={this.state.isLogedIn} path="/settings"> <Settings updateUser={this.updateUser} handleLogout={this.handleLogout} /> </ProtectedRoutes>

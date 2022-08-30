@@ -12,6 +12,7 @@ const Text = ({ para }) => {
     </div>
   } else {
     console.log(typeof para, "type of")
+    return "";
   }
 }
 
@@ -25,14 +26,15 @@ class ArticlePage extends Component {
       error: "",
       loading: false,
       message: "",
-      body:"",
+      body: "",
+      commentsLength: 0,
+      slug: this.props.match.params.slug
     }
   }
 
   componentDidMount() {
-    const slug = this.props.match.params.slug;
-    this.handleArticle(slug);
-    this.handleComments(slug)
+    this.handleArticle(this.state.slug);
+    this.handleComments(this.state.slug);
   }
 
 
@@ -40,42 +42,83 @@ class ArticlePage extends Component {
     this.setState({ loading: true })
     const res = await fetch(url.globalFeed + "/" + slug)
     const data = await res.json()
-    console.log(data, slug)
+    // console.log(data, slug)
     if (data.article) this.setState({ article: data.article, loading: false })
     //! error from api
     if (!res.ok) return Promise.reject((data && data.message) || res.status);
-    console.log(data)
+    // console.log(data)
   }
 
   handleComments = async (slug) => {
     const res = await fetch(url.globalFeed + "/" + slug + "/comments");
     const data = await res.json();
-    if (data.comments) this.setState({ comments: data.comments });
+    if (data.comments) this.setState({ comments: data.comments, commentsLength: data.comments.length });
     if (!res.ok) return Promise.reject((data && data.message) || res.status);
   }
 
-  handleChange = ( { target } ) => {
+  handleChange = ({ target }) => {
     let { name, value } = target
-    this.setState( {[name]:value} )
+    this.setState({ [name]: value })
   }
 
-  handleCreateComment = () => {
-    console.log("you are here to create comment");
-    console.log("commmet",this.state.body)
+  handleCreateComment = async() => {
+    const postData = { comment: { body: this.state.body } };
+    try {
+      this.setState({body:""});
+      const res = await fetch(url.globalFeed + "/" + this.state.slug + "/comments",
+        {
+          method: "POST",
+          headers:
+          {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Token ${localStorage["user_token"]}`
+          },
+          body: JSON.stringify(postData)
+        }
+      )
+      const data = await res.json();
+      console.log(data)
+      if (data.comments) this.setState({ comments: data.comments });
+      if (!res.ok) return Promise.reject((data && data.message) || res.status);
+      this.handleComments(this.state.slug)
+    } catch (err) {
+      console.log(err)
+    }
   }
 
-  handelDeleteComment = () => {
-    console.log("you about to delete this comment")
+  handleDeleteComment = async (id) => {
+    console.log("you about to delete this comment", id, this.state.slug)
+    try {
+      console.log(id)
+      const res = await fetch(url.globalFeed + "/" + this.state.slug + "/comments/" + id,
+        {
+          method: "DELETE",
+          headers:
+          {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Token ${localStorage["user_token"]}`
+          }
+        }
+      )
+      if ( res.status === 204 && res.ok ) this.handleComments(this.state.slug)
+      if (!res.ok) return Promise.reject(res.status);
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+
+  updateState = () => {
+    this.setState((state) => ({ commentsLength: state.commentsLength + 1 }))
   }
 
   render() {
-    console.log(this.state.article?.author.username, "here")
     if (this.state.loading) {
       return <Loader />
     }
-
     return (
-
       <>
         <div className="flex flex-col bg-zinc-700 px-48 h-40">
           <div>
@@ -98,9 +141,7 @@ class ArticlePage extends Component {
 
         <div className="container my-7">
           <div>
-            <Text para={this.state?.article?.body} />
-            <p>{this.state.article?.body}</p>
-            {/* <p className="text-l leading-[3rem] tracking-wide "> {this.state.article?.body} </p> */}
+            <Text className="text-l leading-[3rem] tracking-wide " para={this.state?.article?.body} />          \
           </div>
         </div>
 
@@ -113,14 +154,16 @@ class ArticlePage extends Component {
                   :
                   <>
                     <textarea onChange={this.handleChange}
-                     value={this.state.body}
-                     name="body"
-                     className="border w-full h-28 p-5" placeholder="write a comment...">
+                      value={this.state.body}
+                      name="body"
+                      className="border w-full h-28 p-5" placeholder="write a comment...">
                     </textarea>
                     <div className="border-solid px-4 py-2 flex  justify-between">
                       <img className="h-8 w-8 rounded-3xl" src={this.state.article?.author.image} alt="profile" />
-                      <button onClick={this.handleCreateComment} className="">Post Comment</button>
+                      <button onClick={this.handleCreateComment} disabled={(this.state.body && this.state.body.trim().length) ? false : true}
+                        className="">Post Comment</button>
                     </div>
+                    <button onClick={this.updateState}>{this.state.commentsLength}</button>
                   </>
               }
             </div>
@@ -139,9 +182,13 @@ class ArticlePage extends Component {
                     <h3 className="ml-3"> {comment.author.username} </h3>
                     <p className="ml-3"> {comment.author.createdAt} </p>
                   </div>
-                  <div>
-                    <button onClick={this.handelDeleteComment}>Delete</button>
-                  </div>
+                  {
+                    this.context.user.username === comment.author.username &&
+                    <div>
+                      <button className="bg-green-400"
+                        onClick={() => this.handleDeleteComment(comment.id)}>Delete</button>
+                    </div>
+                  }
                 </div>
               </>
               ))
