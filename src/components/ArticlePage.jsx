@@ -30,6 +30,7 @@ class ArticlePage extends Component {
       commentsLength: 0,
       slug: this.props.match.params.slug
     }
+
   }
 
   componentDidMount() {
@@ -49,6 +50,27 @@ class ArticlePage extends Component {
     // console.log(data)
   }
 
+  handleDeleteArticle = async (slug) => {
+    console.log("handle delete article", slug)
+    // try {
+      const res = await fetch(url.globalFeed + `/${slug}`, {
+        method: "DELETE",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Token ${localStorage["user_token"]}`
+        }
+      }
+      )
+      if ( res.ok ) console.log("DELETED SUCCESSFULLY")
+      if ( res.status === 204 && res.ok ) this.props.history.push("/")
+
+    // } catch (err) {
+    //   console.log(err)
+    // }
+
+  }
+
   handleComments = async (slug) => {
     const res = await fetch(url.globalFeed + "/" + slug + "/comments");
     const data = await res.json();
@@ -61,10 +83,10 @@ class ArticlePage extends Component {
     this.setState({ [name]: value })
   }
 
-  handleCreateComment = async() => {
+  handleCreateComment = async () => {
     const postData = { comment: { body: this.state.body } };
     try {
-      this.setState({body:""});
+      this.setState({ body: "" });
       const res = await fetch(url.globalFeed + "/" + this.state.slug + "/comments",
         {
           method: "POST",
@@ -72,7 +94,7 @@ class ArticlePage extends Component {
           {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            Authorization: `Token ${localStorage["user_token"]}`
+            'Authorization': `Token ${localStorage["user_token"]}`
           },
           body: JSON.stringify(postData)
         }
@@ -102,7 +124,7 @@ class ArticlePage extends Component {
           }
         }
       )
-      if ( res.status === 204 && res.ok ) this.handleComments(this.state.slug)
+      if (res.status === 204 && res.ok) this.handleComments(this.state.slug)
       if (!res.ok) return Promise.reject(res.status);
     } catch (err) {
       console.log(err)
@@ -118,6 +140,7 @@ class ArticlePage extends Component {
     if (this.state.loading) {
       return <Loader />
     }
+    console.log()
     return (
       <>
         <div className="flex flex-col bg-zinc-700 px-48 h-40">
@@ -132,10 +155,21 @@ class ArticlePage extends Component {
               <h3 className="text-white text-l">{this.state.article?.author.username}</h3>
               <p className="text-white text-xs h-1">{this.state.article?.createdAt}</p>
             </div>
-            <div>
-              <button>Edit Profile</button>
-              <button>Delete Article</button>
-            </div>
+            {
+              this.context.user.username === this.state.article?.author.username &&
+              <div>
+                <button><Link to={
+                  {
+                    pathname: `/editor/${this.state.article.slug}`,
+                    state: {
+                      article: this.state.article
+                    }
+                  }
+
+                } >Edit Profile</Link></button>
+                <button onClick={() => this.handleDeleteArticle(this.state.article?.slug)}>Delete Article</button>
+              </div>
+            }
           </div>
         </div>
 

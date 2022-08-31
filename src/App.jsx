@@ -6,7 +6,7 @@ import SignUp from "./components/SignUp"
 import SignIn from "./components/SignIn"
 import ArticlePage from "./components/ArticlePage";
 import url from "./utils/constants"
-import NewPost from "./components/NewPost";
+import NewEditPost from "./components/NewEditPost";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { UserProvider } from "./components/userContext";
 import Settings from "./components/Settings";
@@ -150,7 +150,10 @@ class App extends React.Component {
 
 
               <ProtectedRoutes isAuth={this.state.isLogedIn} path="/settings"> <Settings updateUser={this.updateUser} handleLogout={this.handleLogout} /> </ProtectedRoutes>
-              <ProtectedRoutes isAuth={this.state.isLogedIn} path="/editor"> <NewPost /> </ProtectedRoutes>
+              <ProtectedRoutes isAuth={this.state.isLogedIn} path="/editor" exact > <NewEditPost /> </ProtectedRoutes>
+              <ProtectedRoutes isAuth={this.state.isLogedIn} path="/editor/:slug"> <NewEditPost /> </ProtectedRoutes>
+              
+              
               {/* <ProtectedRoutes isAuth={this.state.isLogedIn} path={location.pathname} exact > <Profile /> </ProtectedRoutes> */}
 
               <Route path="/profile/:username" exact > <Profile /> </Route>

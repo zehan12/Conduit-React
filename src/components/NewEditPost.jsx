@@ -2,7 +2,7 @@ import React from "react";
 import url from "../utils/constants";
 import { withRouter } from "react-router-dom";
 
-class NewPost extends React.Component {
+class NewEditPost extends React.Component {
 	state = {
 		title: "",
 		description: "",
@@ -11,6 +11,28 @@ class NewPost extends React.Component {
 		tagList: [],
 		errors: {},
 		message: "",
+	}
+
+	updateState = ( state ) =>{
+		this.setState( {
+			title: state.title,
+			description: state.description,
+			body: state.body,
+			tagList:  state.tagList
+		} )
+	}
+
+	componentDidMount(){
+		if ( this.props.location.state ) this.updateState(this.props.location.state.article)
+	}
+
+	handleArticleSlug = async ( slug ) => {
+		try {
+			const res = await fetch()
+			const data = await res.json()
+		} catch (err) {
+			console.log(err)
+		}
 	}
 
 	handelChange = ({ target }) => {
@@ -22,28 +44,36 @@ class NewPost extends React.Component {
 
 	handleSubmit = async (e) => {
 		e.preventDefault();
-		try {
+		// try {
+			console.log(this.state)
 			let { title, description, body, tagList } = this.state;
 			if (this.state.tags) {
 				tagList = [...tagList, this.state.tags.split(" ")].flat(Infinity)
 			}
 
+			console.log(title, description, body)
+
 			const { user_token } = localStorage;
 			const postArticle = url.globalFeed;
 			const newPost = { article: { title, description, body, tagList } };
+			const slug =  this.props.location.state ? this.props.location.state.article.slug : "";
+			const method = this.props.location.state === null ? "POST" : "PUT" 
 
-			const res = await fetch(postArticle, {
-				method: "POST",
+			console.log(method)
+
+			const res = await fetch(postArticle+`/${slug}`, {
+				method,
 				headers: {
 					'Accept': 'application/json',
 					'Content-Type': 'application/json',
-					'authorization': `Token ${user_token}`
+					'Authorization': `Token ${user_token}`
 				},
 				body: JSON.stringify(newPost)
 			})
 
+			console.log(res)
 			const data = await res.json();
-
+             console.log(data)
 			//! any error occurs
 			if (data.errors) this.setState({ message: data.errors.message });
 
@@ -54,9 +84,9 @@ class NewPost extends React.Component {
 			if (!res.ok) return Promise.reject((data && data.message) || res.status);
 
 			console.log("Result:", data)
-		} catch (error) {
-			console.log(error)
-		}
+		// } catch (error) {
+		// 	console.log(error)
+		// }
 	}
 
 	handleKey = (event) => {
@@ -77,6 +107,8 @@ class NewPost extends React.Component {
 	}
 
 	render() {
+		// console.log(this.state)
+		// console.log(this.props)
 		let { title, description, body } = this.state.errors;
 		return (
 			<div className="mx-auto bg-amber-200 " style={{ width: "70%" }}>
@@ -90,11 +122,11 @@ class NewPost extends React.Component {
 				{this.state.message && <h2 className="text-red-700 text-3xl">{this.state.message}</h2>}
 				<form onSubmit={this.handleSubmit} className="bg-red-300 p-5">
 					<input onChange={this.handelChange}
-						value={this.state.name}
+						value={this.state.title }
 						name="title" type="text"
 						placeholder="Article Title"
 						className="w-full h-10 pl-3 mb-4"
-					// required
+					// required					
 					/>
 					<br />
 					<input onChange={this.handelChange}
@@ -142,21 +174,21 @@ class NewPost extends React.Component {
 							 bg-green-700 btn 
 							 btn-small btn-secondary"
 						type="submit"
-						disabled={
-							title ||
-							description ||
-							body ||
-							!this.state.title ||
-							!this.state.description ||
-							!this.state.body
-						}
+						// disabled={
+						// 	title ||
+						// 	description ||
+						// 	body ||
+						// 	!this.state.title ||
+						// 	!this.state.description ||
+						// 	!this.state.body
+						// }
 					>
-						Publish Article
-					</button>
+						{ !this.props.location.state ?  "Publish Article" : "Update Article" }
+					</button> 
 				</form>
 			</div>
 		)
 	}
 }
 
-export default withRouter(NewPost);
+export default withRouter(NewEditPost);
