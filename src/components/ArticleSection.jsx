@@ -2,7 +2,7 @@ import React from "react"
 import url from "../utils/constants"
 import Articles from "./Articles"
 import Pagination from "./Pagination"
-import FeedTabs from "./FeedTabs"
+// import FeedTabs from "./FeedTabs"
 
 class ArticleSection extends React.Component {
     constructor(props) {
