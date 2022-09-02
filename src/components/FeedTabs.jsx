@@ -7,15 +7,14 @@ class FeedTabs extends React.Component {
   static contextType = UserContext;
   render() {
     const { tagSelected, removeTag, activeTab } = this.props;
-    // console.log(this.context,"contedt")
+    const classes = "ml-3 hover:border-b-2 text-g font-thin hover:border-bg-[#5CB85C] hover:text-[#5CB85C]  list-none"
     return <nav className="flex p-2 border ">
-
       {
         this.context.isLogedIn &&
         <li
           onClick={(e) => removeTag(e)}
-          className="ml-3 hover:border-b-2 text-lg font-semibold hover:border-green-700 hover:text-green-500 list-none">
-          <NavLink to="/" activeClassName={(tagSelected === "" && activeTab !== "Global Feed") ? "text-green-400" : ""}>
+          className={classes}>
+          <NavLink to="/" activeClassName={(tagSelected === "" && activeTab !== "Global Feed") ? "text-[#5CB85C]  " : ""}>
             Your Feed
           </NavLink>
         </li>
@@ -23,16 +22,16 @@ class FeedTabs extends React.Component {
 
       <li
         onClick={(e) => removeTag(e)}
-        className="ml-3 hover:border-b-2 text-lg font-semibold hover:border-green-700 hover:text-green-500 list-none">
-        <NavLink to="/" activeClassName={tagSelected === "" && activeTab !== "Your Feed" ? "text-green-400" : ""} >
+        className={classes}>
+        <NavLink to="/" activeClassName={tagSelected === "" && activeTab !== "Your Feed" ? "text-[#5CB85C]  " : ""} >
           Global Feed
         </NavLink>
       </li>
 
       {
         tagSelected &&
-        <nav className="ml-3 hover:border-b-2 text-lg font-semibold hover:border-green-700 hover:text-green-500 list-none">
-          <NavLink to="/" activeClassName={tagSelected ? "text-green-400" : ""}>
+        <nav className={classes}>
+          <NavLink to="/" activeClassName={tagSelected ? "text-[#5CB85C]" : ""}>
             #{tagSelected.trim()}
           </NavLink>
         </nav>

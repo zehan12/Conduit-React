@@ -4,17 +4,12 @@ import url from "../utils/constants"
 import { UserContext } from "./userContext";
 import Loader from "./Loader";
 import React from "react";
+import { FaTrash } from "react-icons/fa";
+import { FiEdit } from "react-icons/fi"
+import AritcleHero from "./ArticleHero";
+import ArticleBody from "./ArticleBody";
+import CommentForm from "./CommentForm";
 
-const Text = ({ para }) => {
-  if (typeof para === "string") {
-    return <div style={{ whiteSpace: "pre-line" }}>
-      {para.split("\n").join("\r\n")}
-    </div>
-  } else {
-    console.log(typeof para, "type of")
-    return "";
-  }
-}
 
 class ArticlePage extends Component {
   static contextType = UserContext;
@@ -53,17 +48,17 @@ class ArticlePage extends Component {
   handleDeleteArticle = async (slug) => {
     console.log("handle delete article", slug)
     // try {
-      const res = await fetch(url.globalFeed + `/${slug}`, {
-        method: "DELETE",
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Token ${localStorage["user_token"]}`
-        }
+    const res = await fetch(url.globalFeed + `/${slug}`, {
+      method: "DELETE",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': `Token ${localStorage["user_token"]}`
       }
-      )
-      if ( res.ok ) console.log("DELETED SUCCESSFULLY")
-      if ( res.status === 204 && res.ok ) this.props.history.push("/")
+    }
+    )
+    if (res.ok) console.log("DELETED SUCCESSFULLY")
+    if (res.status === 204 && res.ok) this.props.history.push("/")
 
     // } catch (err) {
     //   console.log(err)
@@ -71,7 +66,8 @@ class ArticlePage extends Component {
 
   }
 
-  handleComments = async (slug) => {
+  handleComments = async () => {
+    const {slug} = this.state
     const res = await fetch(url.globalFeed + "/" + slug + "/comments");
     const data = await res.json();
     if (data.comments) this.setState({ comments: data.comments, commentsLength: data.comments.length });
@@ -132,95 +128,65 @@ class ArticlePage extends Component {
   }
 
 
-  updateState = () => {
-    this.setState((state) => ({ commentsLength: state.commentsLength + 1 }))
-  }
-
   render() {
-    if (this.state.loading) {
+    if (this.state.loading || !this.state.article) {
       return <Loader />
     }
-    console.log()
+    console.log(this.state.article)
     return (
       <>
-        <div className="flex flex-col bg-zinc-700 px-48 h-40">
-          <div>
-            <h1 className="my-5 text-white text-5xl">{this.state.article && this.state.article.title}</h1>
-          </div>
-          <div className="flex items-center">
-            <div>
-              <img className="h-10 w-10" src={this.state.article?.author.image} alt="img"></img>
-            </div>
-            <div>
-              <h3 className="text-white text-l">{this.state.article?.author.username}</h3>
-              <p className="text-white text-xs h-1">{this.state.article?.createdAt}</p>
-            </div>
+        <AritcleHero article={this.state.article} />
+        <ArticleBody
+          body={this.state.article.body}
+          tags={this.state.article.tagList}
+        />
+        <div className="container">
+          <div className="mx-auto" style={{ width: "50%" }}>
             {
-              this.context.user.username === this.state.article?.author.username &&
-              <div>
-                <button><Link to={
-                  {
-                    pathname: `/editor/${this.state.article.slug}`,
-                    state: {
-                      article: this.state.article
-                    }
-                  }
-
-                } >Edit Profile</Link></button>
-                <button onClick={() => this.handleDeleteArticle(this.state.article?.slug)}>Delete Article</button>
-              </div>
+              !this.context.isLogedIn ?
+                <p className="text-left">
+                  <Link to="/signin"> Sign in</Link>
+                  or <Link to="/signup">sign up</Link>
+                  to add comments on this article.</p>
+                :
+                <>
+                <CommentForm
+                  slug={this.props.match.params.slug}
+                 />
+                  {/* <textarea onChange={this.handleChange}
+                    value={this.state.body}
+                    name="body"
+                    className="border border-b-0 w-full h-28 p-5" placeholder="write a comment...">
+                  </textarea>
+                  <div className="border bg-zinc-100 p-4 flex justify-between">
+                    <img className="h-8 w-8 rounded-3xl" src={this.context.user.image} alt="profile" />
+                    <button onClick={this.handleCreateComment} disabled={(this.state.body && this.state.body.trim().length) ? false : true}
+                      className="border bg-[#5CB85C] text-sm p-1 font-bold text-white">Post Comment</button>
+                  </div> */}
+                </>
             }
           </div>
-        </div>
 
-        <div className="container my-7">
-          <div>
-            <Text className="text-l leading-[3rem] tracking-wide " para={this.state?.article?.body} />          \
-          </div>
-        </div>
-
-
-        <div className="container">
-          {
-            <div className="mx-auto" style={{ width: "50%" }}>
-              {
-                !this.context.isLogedIn ? <p className="text-left"> <Link> Sign in</Link> or <Link>sign up</Link> to add comments on this article.</p>
-                  :
-                  <>
-                    <textarea onChange={this.handleChange}
-                      value={this.state.body}
-                      name="body"
-                      className="border w-full h-28 p-5" placeholder="write a comment...">
-                    </textarea>
-                    <div className="border-solid px-4 py-2 flex  justify-between">
-                      <img className="h-8 w-8 rounded-3xl" src={this.state.article?.author.image} alt="profile" />
-                      <button onClick={this.handleCreateComment} disabled={(this.state.body && this.state.body.trim().length) ? false : true}
-                        className="">Post Comment</button>
-                    </div>
-                    <button onClick={this.updateState}>{this.state.commentsLength}</button>
-                  </>
-              }
-            </div>
-          }
 
           <div className="mx-auto" style={{ width: "50%" }}>
             {
               this.state.comments &&
               React.Children.toArray(this.state.comments.map((comment) => <>
-                <div className="outline-1 p-2">
+                <div className="border p-2 py-6 mt-4">
                   <h4 className="m-4"> {comment.body} </h4>
                 </div>
-                <div className="outline-1 p-2 mb-4 flex justify-between">
+                <div className="border bg-zinc-100 p-2 mb-4 flex justify-between">
                   <div className="flex">
                     <img className="h-5 w-5 rounded-xl" src={comment.author.image} alt="img" />
-                    <h3 className="ml-3"> {comment.author.username} </h3>
-                    <p className="ml-3"> {comment.author.createdAt} </p>
+                    <h3 className="ml-3 text-xs text-[#5CB85C]"> {comment.author.username} </h3>
+                    <p className="ml-3 text-xs  text-slate-400"> {comment.createdAt} </p>
                   </div>
                   {
                     this.context.user.username === comment.author.username &&
                     <div>
-                      <button className="bg-green-400"
-                        onClick={() => this.handleDeleteComment(comment.id)}>Delete</button>
+                      <FaTrash
+                        className="hover:text-red-700 text-sm"
+                        onClick={() => this.handleDeleteComment(comment.id)} />
                     </div>
                   }
                 </div>
@@ -228,6 +194,7 @@ class ArticlePage extends Component {
               ))
             }
           </div>
+
         </div>
 
       </>

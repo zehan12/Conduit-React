@@ -1,4 +1,5 @@
 module.exports = {
+  
   purge: ['./src/**/*.{js,jsx,ts,tsx}', './public/index.html'],
   darkMode: false, // or 'media' or 'class'
   theme: {
@@ -9,7 +10,7 @@ module.exports = {
     },
     container: {
       center: true,
-      
+
       padding: {
         DEFAULT: '1rem',
         sm: '7rem',
@@ -23,6 +24,7 @@ module.exports = {
     extend: {},
   },
   plugins: [],
+
 }
 
 // @media screen and (min-width: 992px) {}

@@ -87,7 +87,7 @@ class SignIn extends React.Component {
         const { formErrors } = this.state;
         console.log(this.props)
         return (
-            <div style={{ width: "50%" }} className="text-center container" data-testid="mainDiv" >
+            <div style={{ width: "50%" }} className="text-center container mt-44" data-testid="mainDiv" >
                 <h1 className="text-4xl my-2">Sign In</h1>
                 <Link to="/signup" className="text-green-400">Need an account?</Link>
 
@@ -112,7 +112,7 @@ class SignIn extends React.Component {
                                          focus:shadow-outline"
                         type="password" placeholder="Password"
                     />
-                    <button className="relative left-48 my-2
+                    <button className=" my-2 float-right
                                             text-white bg-green-500
                                             py-2 px-4 rounded text-xl"
                     //  disabled={formErrors.length >= 1} 

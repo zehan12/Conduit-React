@@ -39,7 +39,7 @@ class Profile extends React.Component {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: token,
+                'Authorization': token,
             },
         })
         const data = await res.json()

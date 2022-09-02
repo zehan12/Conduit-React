@@ -71,9 +71,9 @@ class SignUp extends React.Component {
                 for (const [key, value] of Object.entries(data.errors)) {
                     if (value === "is already taken") count += 1;
                 }
-                if (count === 2){
+                if (count === 2) {
                     this.props.history.push("/signin")
-                    console.log("go to login") 
+                    console.log("go to login")
                 }
                 console.log(count)
             }
@@ -98,7 +98,7 @@ class SignUp extends React.Component {
         let { username, email, password } = this.state.error;
         console.log(this.props)
         return (
-            <div style={{ width: "50%" }} className="text-center container">
+            <div style={{ width: "50%" }} className="text-center container pt-20 mt-20">
                 <h1 className="text-4xl my-2">Sign Up</h1>
                 <Link to="signin" className="text-green-400">Have an account?</Link>
                 {
@@ -137,21 +137,27 @@ class SignUp extends React.Component {
                                          focus:shadow-outline text-xl"
                         type="password" placeholder="Password"
                     />
+                    <p className="flex p-2">
+                    <svg
+                        className="p-2"
+                        class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400 transition ease-in-out duration-150"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                    >
+                        <path
+                            fill-rule="evenodd"
+                            d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                            clip-rule="evenodd"
+                        />
+                    </svg>
+                    Please enter your details
+                    </p>
                     <button className="relative left-48 my-2
                                             text-white bg-green-500
                                             py-2 px-4 rounded text-xl">
-                        {/* <svg
-                  class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400 transition ease-in-out duration-150"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                    clip-rule="evenodd"
-                  />
-                </svg> */}
+
                         Sign up
+
                     </button>
                 </form>
             </div>
