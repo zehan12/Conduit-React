@@ -167,43 +167,15 @@ class ArticlePage extends Component {
           </div>
           <div className="mx-auto" style={{ width: "50%" }}>
             {
-              this.state.comments &&
-              this.state.comments.map((comment) => 
+              this.state.comments && this.state.comments.map((comment) =>
                 <CommentBox
                   comment={comment} logedUser={this.context.user.username || false}
                   handleDeleteComment={this.handleDeleteComment}
                 />)
-              }
-            
-           
-
-            {/* <>
-              <div className="border p-2 py-6 mt-4">
-                  <h4 className="m-4"> {comment.body} </h4>
-                </div>
-                <div className="border bg-zinc-100 p-2 mb-4 flex justify-between">
-                  <div className="flex">
-                    <img className="h-5 w-5 rounded-xl" src={comment.author.image} alt="img" />
-                    <h3 className="ml-3 text-xs text-[#5CB85C]"> {comment.author.username} </h3>
-                    <p className="ml-3 text-xs  text-slate-400"> {comment.createdAt} </p>
-                  </div>
-                  {
-                    this.context.user.username === comment.author.username &&
-                    <div>
-                      <FaTrash
-                        className="hover:text-red-700 text-sm"
-                        onClick={() => this.handleDeleteComment(comment.id)} />
-                    </div>
-                  }
-                </div>
-              </> ))}
-               */}
+            }
           </div>
-
         </div>
-
       </>
-
     )
   }
 }

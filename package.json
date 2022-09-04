@@ -11,9 +11,10 @@
     "react-icons": "^4.4.0",
     "react-router-dom": "^5.3.3",
     "react-scripts": "5.0.1",
+    "react-toastify": "^9.0.8",
     "web-vitals": "^2.1.4"
   },
-  "proxy":"https://mighty-oasis-08080.herokuapp.com",
+  "proxy": "https://mighty-oasis-08080.herokuapp.com",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

@@ -21,8 +21,8 @@ function ArticleHero( { title, authorImage, authorName, articleCreatedAt, logedI
           <div className="flex">
             <button className="border border-zinc-400 text-xs p-1 ml-3 mr-1 text-zinc-400 hover:bg-green-600 hover:text-white">
               <Link className="flex"
-                to={{ pathname: `/editor/${slug}`, state: { article: article } }} >
-                <FiEdit className="mr-1 mt-[.10rem]" /> Edit Profile</Link></button>
+                to={{ pathname: `/editor/${slug}` }} >
+                <FiEdit className="mr-1 mt-[.10rem]" /> Edit Article</Link></button>
             <div className="border border-red-700 hover:bg-red-600 hover:text-white text-xs p-1 py-2 mx-3 text-red-700 flex cursor-pointer">
               <FaTrash className="mr-1 mt-[.10rem]" />
               <button

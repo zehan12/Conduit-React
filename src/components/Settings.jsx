@@ -81,16 +81,16 @@ class Settings extends React.Component {
         let { email, username, password, image, bio } = this.state
 
         return (
-            <div className="mx-auto bg-amber-200 p-7" style={{ width: "40%" }}>
+            <div className="mx-auto p-7" style={{ width: "40%" }}>
                 <h1 className="text-4xl font-sans text-normal text-center text-zinc-700">Your Settings</h1>
                 {this.state.message && <h2 className="text-red-700 text-3xl">{this.state.message + " !!!"}</h2>}
                 {Object.entries(this.state.errors)?.map((ele) => <h2 key={ele} className="text-red-700 text-3xl m-2">{ele.join(" : ")} </h2>)}
                 <form onSubmit={this.handleSubmit}>
-                    <input className="w-full m-2 px-2 pl-2 h-10" onChange={this.handleChange} type="text" name="image" value={image} placeholder="URL of profile picture" /> <br />
-                    <input className="w-full m-2 px-2 pl-2 h-10" onChange={this.handleChange} type="text" name="username" value={username} placeholder="Username" /> <br />
-                    <textarea className="w-full m-2 px-2 pl-2 h-48" onChange={this.handleChange} value={bio} name="bio" row="" col="4" placeholder="Short bio about you" /> <br />
-                    <input className="w-full m-2 px-2 pl-2 h-10" onChange={this.handleChange} type="text" name="email" value={email} placeholder="Email" /> <br />
-                    <input className="w-full m-2 px-2 pl-2 h-10" onChange={this.handleChange} type="password" name="password" value={password} placeholder="New Password" /> <br />
+                    <input className="border py-4 w-full m-2 px-2 pl-2 h-10" onChange={this.handleChange} type="text" name="image" value={image} placeholder="URL of profile picture" /> <br />
+                    <input className="border py-4 w-full m-2 px-2 pl-2 h-10" onChange={this.handleChange} type="text" name="username" value={username} placeholder="Username" /> <br />
+                    <textarea className="border py-4 w-full m-2 px-2 pl-2 h-48" onChange={this.handleChange} value={bio} name="bio" row="" col="4" placeholder="Short bio about you" /> <br />
+                    <input className="border py-4 w-full m-2 px-2 pl-2 h-10" onChange={this.handleChange} type="text" name="email" value={email} placeholder="Email" /> <br />
+                    <input className="border py-4 w-full m-2 px-2 pl-2 h-10" onChange={this.handleChange} type="password" name="password" value={password} placeholder="New Password" /> <br />
                     <button className="text-right  my-2 px-6 rounded text-white h-10 bg-green-700 btn btn-small btn-secondary" type="submit">Update Settings</button>
                 </form>
                 <div className="border-black border-b-2 my-4"></div>

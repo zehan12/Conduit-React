@@ -3,37 +3,61 @@ import url from "../utils/constants";
 import { withRouter } from "react-router-dom";
 
 class NewEditPost extends React.Component {
-	state = {
-		title: "",
-		description: "",
-		body: "",
-		tags: "",
-		tagList: [],
-		errors: {},
-		message: "",
+	constructor(props) {
+		super(props)
+		this.state = {
+			title: "",
+			description: "",
+			body: "",
+			tags: "",
+			tagList: [],
+			errors: {},
+			message: "",
+		}
 	}
 
-	updateState = ( state ) =>{
-		this.setState( {
+	updateState = (state) => {
+		this.setState({
 			title: state.title,
 			description: state.description,
 			body: state.body,
-			tagList:  state.tagList
-		} )
+			tagList: state.tagList
+		})
 	}
 
-	componentDidMount(){
-		if ( this.props.location.state ) this.updateState(this.props.location.state.article)
+	restState = () => {
+		this.setState({
+			title: "",
+			description: "",
+			body: "",
+			tagList: "",
+		})
 	}
 
-	handleArticleSlug = async ( slug ) => {
+	componentDidMount() {
+		if (this.props.match.params.slug){
+			this.fetchArticle(this.props.match.params.slug)
+		} else {
+			if (this.props?.match.path === "/editor") this.restState()
+		}
+	}
+
+	componentDidUpdate (prevProp) {
+		if(this.props.match.params.slug && this.props.match.params.slug !== prevProp.match.params.slug) {
+			this.fetchArticle(this.props.match.params.slug)
+		}
+	}
+
+	fetchArticle = async (slug) => {
 		try {
-			const res = await fetch()
+			const res = await fetch(url.globalFeed + "/" + slug)
 			const data = await res.json()
+			if (data.article) this.updateState(data.article)
 		} catch (err) {
 			console.log(err)
 		}
 	}
+
 
 	handelChange = ({ target }) => {
 		const { name, value } = target;
@@ -44,7 +68,7 @@ class NewEditPost extends React.Component {
 
 	handleSubmit = async (e) => {
 		e.preventDefault();
-		// try {
+		try {
 			console.log(this.state)
 			let { title, description, body, tagList } = this.state;
 			if (this.state.tags) {
@@ -56,12 +80,12 @@ class NewEditPost extends React.Component {
 			const { user_token } = localStorage;
 			const postArticle = url.globalFeed;
 			const newPost = { article: { title, description, body, tagList } };
-			const slug =  this.props.location.state ? this.props.location.state.article.slug : "";
-			const method = this.props.location.state === null ? "POST" : "PUT" 
+			const slug = this.props.match.params.slug ? this.props.match.params.slug : "";
+			const method = !this.props.match.params.slug ? "POST" : "PUT"
 
-			console.log(method)
+			console.log(method, slug, "meth")
 
-			const res = await fetch(postArticle+`/${slug}`, {
+			const res = await fetch(postArticle + `/${slug}`, {
 				method,
 				headers: {
 					'Accept': 'application/json',
@@ -73,7 +97,7 @@ class NewEditPost extends React.Component {
 
 			console.log(res)
 			const data = await res.json();
-             console.log(data)
+			console.log(data)
 			//! any error occurs
 			if (data.errors) this.setState({ message: data.errors.message });
 
@@ -84,9 +108,9 @@ class NewEditPost extends React.Component {
 			if (!res.ok) return Promise.reject((data && data.message) || res.status);
 
 			console.log("Result:", data)
-		// } catch (error) {
-		// 	console.log(error)
-		// }
+		} catch (error) {
+			console.log(error)
+		}
 	}
 
 	handleKey = (event) => {
@@ -108,10 +132,12 @@ class NewEditPost extends React.Component {
 
 	render() {
 		// console.log(this.state)
-		// console.log(this.props)
+		console.log(this.props, "prop[s")
+		console.log(Boolean(this.props.match.params.length),"this.pro")
 		let { title, description, body } = this.state.errors;
+
 		return (
-			<div className="mx-auto bg-amber-200 " style={{ width: "70%" }}>
+			<div className="mx-auto " style={{ width: "70%" }}>
 				<h3 className="text-red-600 font-mono text-xl" >
 					{
 						title ? `title:${title}` :
@@ -120,12 +146,12 @@ class NewEditPost extends React.Component {
 					}
 				</h3>
 				{this.state.message && <h2 className="text-red-700 text-3xl">{this.state.message}</h2>}
-				<form onSubmit={this.handleSubmit} className="bg-red-300 p-5">
+				<form onSubmit={this.handleSubmit} className=" p-5">
 					<input onChange={this.handelChange}
-						value={this.state.title }
+						value={this.state.title}
 						name="title" type="text"
 						placeholder="Article Title"
-						className="w-full h-10 pl-3 mb-4"
+						className="w-full h-10 pl-3 mb-4 border py-4"
 					// required					
 					/>
 					<br />
@@ -134,7 +160,7 @@ class NewEditPost extends React.Component {
 						name="description"
 						type="text"
 						placeholder="What's this article about?"
-						className="w-full h-10 pl-3 py-2 mb-4"
+						className="w-full h-10 pl-3 mb-4 border py-4"
 					// required
 					/>
 					<br />
@@ -142,7 +168,7 @@ class NewEditPost extends React.Component {
 						value={this.state.body}
 						name="body"
 						// rows="10" cols="10"
-						className="w-full h-48 pl-3 py-2 mb-4"
+						className="w-full h-48 pl-3  mb-4 border py-4"
 						placeholder="Write your article ( in Markdown )"
 					// required
 					/>
@@ -152,7 +178,7 @@ class NewEditPost extends React.Component {
 						value={this.state.tags}
 						name="tags" type="text"
 						placeholder="Enter your tags"
-						className="w-full h-10 pl-3 py-2 mb-1"
+						className="w-full h-10 pl-3 mb-1 border py-4"
 					/>
 					<br />
 					<div className="flex">
@@ -168,23 +194,27 @@ class NewEditPost extends React.Component {
 					</div>
 					<br />
 					<button
-						className="text-right 
+						className={`float float-right
 							 my-2 px-6 rounded
 							 text-white h-10
 							 bg-green-700 btn 
-							 btn-small btn-secondary"
+							 btn-small btn-secondary 
+							 ${ title || description || body || !this.state.title ||
+								!this.state.description ||
+								!this.state.body ? "cursor-not-allowed" : "" }						
+							 `}
 						type="submit"
-						// disabled={
-						// 	title ||
-						// 	description ||
-						// 	body ||
-						// 	!this.state.title ||
-						// 	!this.state.description ||
-						// 	!this.state.body
-						// }
+					disabled={
+						title ||
+						description ||
+						body ||
+						!this.state.title ||
+						!this.state.description ||
+						!this.state.body
+					}
 					>
-						{ !this.props.location.state ?  "Publish Article" : "Update Article" }
-					</button> 
+						{!this.props.match.params.slug ? "Publish Article" : "Update Article"}
+					</button>
 				</form>
 			</div>
 		)
