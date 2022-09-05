@@ -20,10 +20,10 @@ export default function Articles({ articles, error, isLoading, handleLikeDislike
       {
         isLoading ? <div> <SkeletonArticlesOFArray /> </div>
           :
-          React.Children.toArray(articles.map((article) => <Post article={article}
+          articles.map((article) => <Post key={article.slug} article={article}
            handleLikeDislike={handleLikeDislike}
           />
-          ))
+          )
       }
     </div>
 

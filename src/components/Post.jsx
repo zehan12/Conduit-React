@@ -7,10 +7,10 @@ function Post({article, handleLikeDislike}) {
                 <div>
                     <img className="w-12 h-12 rounded-3xl" src={article.author.image || "./images/profile.png"} alt={article.author.username} />
                 </div>
-                <div className=' ml-2'>
+                <Link to={`/profile/${article.author.username}`} className=' ml-2'>
                     <h3 className="text-lg text-green-500 hover:underline hover:text-green-700 "> {article.author.username + "   " + article.favorited} </h3>
                     <p className='font-thin text-sm text-gray-400'>{String(new Date(article.createdAt)).slice(0, 16)} </p>
-                </div>
+                </Link>
             </div>
 
             <div onClick={() => handleLikeDislike(article.slug, article.favorited)}

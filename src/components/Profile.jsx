@@ -4,6 +4,10 @@ import url from "../utils/constants";
 import { withRouter, NavLink, Link } from "react-router-dom"
 import ProfileHero from "./ProfileHero";
 import Post from "./Post";
+import ProfileApi from "../APIs/profile";
+import { toast } from "react-toastify";
+import ArticleApi from "../APIs/article";
+import SkeletonArticlesOFArray from "../skeletons/SkeletonArticlesOfArray";
 
 
 class Profile extends React.Component {
@@ -14,68 +18,97 @@ class Profile extends React.Component {
     state = {
         tabSelected: "MyArticle",
         viewProfile: {},
-        articles: null,
-        error: ""
+        articles: [],
+        error: "",
+        loading: false,
+        articleLoading: false
     };
 
     componentDidMount() {
         if (this.loginUser && this.user === this.loginUser) {
-            let token = localStorage["token_user"]
-            this.getProfile(this.loginUser, token)
+
+            this.getProfile(this.loginUser)
         }
         if ((this.loginUser && this.user !== this.loginUser) || !this.loginUser) {
-            let token = localStorage["user_token"] ? `Token ${localStorage["user_token"]}` : '';
-            this.getProfile(this.user, token)
+
+            this.getProfile(this.user)
         }
         if (this.state.tabSelected === "MyArticle") {
             console.log("here")
-            this.handleArticle(this.user, "author")
+            this.fetchArticle(this.user, "author")
         }
         if (this.state.tabSelected === "favourites") {
-            this.handleArticle(this.user, "favorited")
+            this.fetchArticle(this.user, "favorited")
         }
     }
 
 
 
     getProfile = async (user, token) => {
-        const res = await fetch(url.userProfiles + '/' + user, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': token,
-            },
-        })
-        const data = await res.json()
-        if (!res.ok) return Promise.reject('Unable to fetch profile!');
-        if (data.profile && res.ok && res.status === 200) return this.setState({ viewProfile: data.profile }, () => console.log(this.state.viewProfile, "p"));
-        if (data.error) this.setState({ error: data.error });
+        try {
+            const res = await ProfileApi.getProfile(user);
+            const data = await res.json()
+            if (!res.ok) return Promise.reject('Unable to fetch profile!');
+            if (data.profile && res.ok && res.status === 200) return this.setState({ viewProfile: data.profile });
+            if (data.error) this.setState({ error: data.error });
+        } catch {
+            toast.error("Something went Wrong in Loading Profile!!!")
+        }
     }
 
-    handleArticle = async (profileUser, key) => {
-        const res = await fetch(url.globalFeed + `?${key}=${profileUser}`);
-        const data = await res.json();
-        if (data.articles) this.setState({ articles: data.articles });
+    fetchArticle = async (profileUser, key) => {
+        try {
+            this.setState( { articles: [], articleLoading: true } )
+            const res = key === "author" ? await ArticleApi.byAuthor(profileUser) : await ArticleApi.ByFavorited( profileUser )
+            const data = await res.json()
+            if (data.errors) toast.error("articles :" + data.errors.message)
+            if (!res.ok) toast.error(`${res.status}: ${res.statusText}`);
+            if ( res.ok ) toast.success("fetched Articles")
+            if (data.articles) this.setState({ articles: data.articles });
+        } catch (error) {
+            toast.error(error.toString() || 'There was an error!')
+        } finally {
+            this.setState( ( prevState ) => ( { ...prevState, articleLoading: false } ) );
+        }
     }
 
     followAndUnfollowUser = async (user, following) => {
-        const method = following === true ? "DELETE" : "POST";
-        const res = await fetch(url.userProfiles + "/" + user + "/follow", { method, headers: { 'Content-Type': 'application/json', Authorization: `Token ${localStorage["user_token"]}` } });
-        const data = await res.json();
-        const profile = { ...this.state.viewProfile };//need to know
-        profile.following = data.profile.following;// need to know
-        this.setState({ viewProfile: profile });
+        try {
+            this.setState({ loading: true })
+            const res = following ? await ProfileApi.unfollowUser(user) : await ProfileApi.followUser(user);
+            const data = await res.json();
+            if (res.status === 200 && res.ok) {
+                const profile = { ...this.state.viewProfile };
+                profile.following = data.profile.following;
+                this.setState({ viewProfile: profile });
+                if (data.profile.following) {
+                    toast.success(`you start following ${data.profile.username}`)
+                } else {
+                    toast.success(`unfollowed ${data.profile.username}`)
+                }
+            }
+            if (data.errors) {
+                toast.error(data.errors.message)
+            }
+            if (!res.ok) {
+                toast.error(`${res.status}: ${res.statusText}`);
+            }
+        } catch (error) {
+            toast.error(error.toString() || 'There was an error!')
+        } finally {
+            this.setState((prevState) => ({ ...prevState, loading: false }));
+        }
     }
 
     handleTab = (tab) => {
         if (tab === "My Articles") {
             this.setState({ tabSelected: "My Articles" },
-                () => this.handleArticle(this.user, "author")
+                () => this.fetchArticle(this.user, "author")
             )
         }
         if (tab !== "My Articles") {
             this.setState({ tabSelected: "favourites" },
-                () => this.handleArticle(this.user, "favorited")
+                () => this.fetchArticle(this.user, "favorited")
             )
         }
     }
@@ -104,16 +137,18 @@ class Profile extends React.Component {
     }
 
     render() {
+        // console.log(this.state.viewProfile)
         return (<>
 
             {/* //* Profile Hero */}
             <ProfileHero
-              viewProfile={this.state.viewProfile}
-              ContextUser={this.context}
-              loginUser={this.loginUser}
-              user={this.user}
-              followAndUnfollowUser={this.followAndUnfollowUser}
-             />
+                viewProfile={this.state.viewProfile}
+                ContextUser={this.context}
+                loginUser={this.loginUser}
+                user={this.user}
+                followAndUnfollowUser={this.followAndUnfollowUser}
+                loading={this.state.loading}
+            />
 
             {/* //*Profile FeedBar */}
             <div className="container flex" style={{ width: "75%" }}>
@@ -132,7 +167,8 @@ class Profile extends React.Component {
             {/* //*prdfile Posts  */}
             <div className="container flex flex-col" style={{ width: "75%" }}>
                 {
-                    this.state.articles === null ? <h3>ON Article Yet...</h3> :
+                    this.state.articleLoading ?  <SkeletonArticlesOFArray/> :
+                    this.state.articles.length === 0 ? <h3> No articles are here... yet. </h3> :
                     this.state.articles.map((article) => <Post article={article} handleLikeDislike={this.handleLikeDislike} />)
                 }
             </div>

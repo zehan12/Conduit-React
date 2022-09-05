@@ -142,6 +142,7 @@ class ArticlePage extends Component {
           authorImage={this.state.article.author.image}
           authorName={this.state.article.author.username}
           articleCreatedAt={this.state.article.createdAt}
+          handleDeleteArticle={this.handleDeleteArticle}
         />
         <ArticleBody
           body={this.state.article.body}

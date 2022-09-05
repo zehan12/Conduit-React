@@ -16,6 +16,10 @@ class NewEditPost extends React.Component {
 		}
 	}
 
+	static getDerivedStateFromProps( props, state ){
+		console.log(props,state,"gdsfp")
+	}
+
 	updateState = (state) => {
 		this.setState({
 			title: state.title,

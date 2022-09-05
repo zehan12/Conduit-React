@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { FaTrash } from "react-icons/fa";
 import { FiEdit } from "react-icons/fi"
 
-function ArticleHero( { title, authorImage, authorName, articleCreatedAt, logedInUser, slug, article } ) {
+function ArticleHero( { title, authorImage, authorName, articleCreatedAt, logedInUser, slug,   handleDeleteArticle } ) {
+  
   return ( 
     <div className="flex flex-col bg-[#292524] px-48 py-5 ">
       <div>
@@ -26,7 +27,7 @@ function ArticleHero( { title, authorImage, authorName, articleCreatedAt, logedI
             <div className="border border-red-700 hover:bg-red-600 hover:text-white text-xs p-1 py-2 mx-3 text-red-700 flex cursor-pointer">
               <FaTrash className="mr-1 mt-[.10rem]" />
               <button
-                onClick={() => this.handleDeleteArticle(slug)}>
+                onClick={() => handleDeleteArticle(slug)}>
                 Delete Article</button>
             </div>
           </div>

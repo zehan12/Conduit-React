@@ -1,6 +1,8 @@
 import React from "react";
 import url from "../utils/constants"
 import { Link } from "react-router-dom"
+import UserApi from "../APIs/user";
+import { toast } from "react-toastify";
 
 
 
@@ -16,51 +18,72 @@ class SignIn extends React.Component {
     }
 
 
-    handleFormSubmit = (e) => {
+    handleFormSubmit = async (e) => {
         e.preventDefault();
-
         const email = this.email.current.value;
         const password = this.password.current.value;
-        // const formErrors = this.handleFormValidation(email, password);
-        // if (formErrors.length > 0) {
-        //     this.setState({ formErrors });
-        //     return;
-        // }
-
-        fetch(url.login, {
-            method: "POST",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                user:
-                {
-                    "email": email,
-                    "password": password
-                }
-            })
-        }).then(async response => {
-            const isJson = response.headers.get('content-type')?.includes('application/json');
-            const data = isJson && await response.json();
-
+        try {
+            this.setState({ isLoading: true });
+            const res = await UserApi.loginUser(email, password);
+            const isJson = await res.headers.get('content-type')?.includes('application/json')
+            const data = isJson && await res.json();
+            console.log(data)
             if (data.errors) {
                 this.setState({ errors: data.errors })
+                for (const [key, value] of Object.entries(data.errors)) {
+                    toast.error( key +" : " + value )
+                }
             }
+            if ( res.status === 200 && res.ok && data.user.token ) {
+            localStorage.setItem("user_token", data.user.token);
+            toast.success(`User ${data.user.username} Loged in Successfully`);
+            this.props.isLogIn(data.user);
+            }
+            if (!res.ok) {
+                toast.error(`${res.status}: ${res.statusText}`);
+            }
+            console.log("Result:",data)
 
-            if (response.status === 200 && response.ok && data.user.token) {
-                localStorage.setItem("user_token", data.user.token);
-                this.props.isLogIn(data.user);
-            }
-            if (!response.ok) {
-                const errors = (data && data.message) || response.status;
-                return Promise.reject(errors);
-            }
-        })
-            .catch(error => {
-                this.setState({ errorMessage: error.toString() });
-                console.error('There was an error!', error);
-            });
+        } catch (error) {
+            toast.error( error.toString() || 'There was an error!' )
+        } finally {
+            this.setState((prevState) => ({ ...prevState, isLoading: false  }))
+        }
+
+        // fetch(url.login, {
+        //     method: "POST",
+        //     headers: {
+        //         'Accept': 'application/json',
+        //         'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify({
+        //         user:
+        //         {
+        //             "email": email,
+        //             "password": password
+        //         }
+        //     })
+        // }).then(async response => {
+        //     const isJson = response.headers.get('content-type')?.includes('application/json');
+        //     const data = isJson && await response.json();
+
+        //     if (data.errors) {
+        //         this.setState({ errors: data.errors })
+        //     }
+
+        //     if (response.status === 200 && response.ok && data.user.token) {
+        //         localStorage.setItem("user_token", data.user.token);
+        //         this.props.isLogIn(data.user);
+        //     }
+        //     if (!response.ok) {
+        //         const errors = (data && data.message) || response.status;
+        //         return Promise.reject(errors);
+        //     }
+        // })
+        //     .catch(error => {
+        //         this.setState({ errorMessage: error.toString() });
+        //         console.error('There was an error!', error);
+        //     });
     };
 
     handleBlur = (e) => {
@@ -89,10 +112,14 @@ class SignIn extends React.Component {
         return (
             <div style={{ width: "50%" }} className="text-center container mt-44" data-testid="mainDiv" >
                 <h1 className="text-4xl my-2">Sign In</h1>
-                <Link to="/signup" className="text-green-400">Need an account?</Link>
-
+                <Link to="/signup" className="text-green-400 p-1">Need an account?</Link>
+                {
+                this.state.errors && Object.keys(this.state.errors).map((key, i) => (
+                    <p key={i} className="mt-5 p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800">
+                        {key}: {this.state.errors[key]}
+                    </p>))
+                }
                 <form onSubmit={this.handleFormSubmit}>
-                    {/* {this.state.errors && <p className="text-red">{this.state.errors}</p>} */}
                     {formErrors.map(error => <p key={error}>{error}</p>)}
                     <input ref={this.email}
                         onBlur={this.handleBlur}
@@ -117,7 +144,12 @@ class SignIn extends React.Component {
                                             py-2 px-4 rounded text-xl"
                     //  disabled={formErrors.length >= 1} 
                     >
+                         {/* {
+                            this.state.isLoading ? (
+                                <div className="flex align-bottom"> <Icon /> Loading...</div>
+                         ) : */}
                         Sign in
+                            {/* } */}
                     </button>
                 </form>
             </div>

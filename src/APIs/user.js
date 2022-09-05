@@ -8,11 +8,16 @@ const UserApi = {
             headers: header(),
             body: JSON.stringify({ user })
         })
-        
+
     }, 
 
     loginUser: async ( email, password ) => {
-        return await fetch();
+        const user = { email, password }
+        return await fetch( base + "/users/login", {
+            method: "POST",
+            headers: header(),
+            body: JSON.stringify({ user })
+        });
     }
 } 
 
