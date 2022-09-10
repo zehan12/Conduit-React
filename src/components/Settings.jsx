@@ -30,7 +30,6 @@ class Settings extends React.Component {
     handleChange = ({ target }) => {
         let { name, value } = target;
         this.setState({ [name]: value })
-        console.log(this.state)
     }
 
     handleSubmit = async (e) => {
@@ -45,8 +44,6 @@ class Settings extends React.Component {
                 "body")
             const res = await UserApi.updateUser( userBody )
             const data = await res.json()
-            console.log(res,"my")
-            console.log(data)
             if (data.errors) {
                 if (data.errors.message) {
                     this.setState({ message: data.errors.message })
@@ -56,12 +53,8 @@ class Settings extends React.Component {
                 }
             }
             if (res.status === 200 && res.ok) {
-                console.log(localStorage["user_token"])
                 localStorage.clear();
                 localStorage.setItem("user_token", data.user.token);
-                console.log(localStorage["user_token"])
-
-                console.log(data.user,"neeeeeeeeeeeeeee")
                 updateUser(data.user)
                 this.props.history.push("/");
             }
