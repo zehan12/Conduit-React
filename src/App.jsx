@@ -1,19 +1,29 @@
-import React, { Fragment } from "react";
+import React, { Fragment, lazy, Suspense } from "react";
 import { BrowserRouter as Router, Route, Switch, Redirect, withRouter } from "react-router-dom";
 import Header from "./components/Header";
-import Home from "./components/Home";
-import SignUp from "./components/SignUp"
-import SignIn from "./components/SignIn"
-import ArticlePage from "./components/ArticlePage";
+// import Home from "./components/Home";
+// import SignUp from "./components/SignUp"
+// import SignIn from "./components/SignIn"
+// import ArticlePage from "./components/ArticlePage";
+// import NewEditPost from "./components/NewEditPost";
+// import Settings from "./components/Settings";
+// import Profile from "./components/Profile";
+import PageNotFound from "./components/PageNotFound";
 import url from "./utils/constants"
-import NewEditPost from "./components/NewEditPost";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { UserProvider } from "./components/userContext";
-import Settings from "./components/Settings";
-import Profile from "./components/Profile";
 import { ToastContainer } from "react-toastify"
 import 'react-toastify/dist/ReactToastify.css';
-import PageNotFound from "./components/PageNotFound";
+
+
+const Home = lazy(() => import("./components/Home"))
+const SignUp = lazy(() => import("./components/SignUp"))
+const SignIn = lazy(() => import("./components/SignIn"))
+const ArticlePage = lazy(() => import("./components/ArticlePage"))
+const NewEditPost = lazy(() => import("./components/NewEditPost"))
+const Settings = lazy(() => import("./components/Settings"))
+const Profile = lazy(() => import("./components/Profile"))
+
 
 
 const ProtectedRoutes = ({ isAuth, children, ...rest }) => {
@@ -141,35 +151,24 @@ class App extends React.Component {
           <ErrorBoundary>
             <Header isLogedIn={this.state.isLogedIn} user={this.state.user} />
           </ErrorBoundary>
-
           <ErrorBoundary>
             <UserProvider value={this.state} >
-              <Switch>
-
-                <Route exact path='/' children={<Home isLogedIn={this.state.isLogedIn} user={this.state.user} />} />
-                <Route path="/article/:slug" component={ArticlePage} />
-
-                <Route path="/signup" > <SignUp /> </Route>
-                <Route path="/signin" children={this.state.isLogedIn ? <Redirect to="/" /> : <SignIn isLogIn={this.isLogIn} />} />
-
-
-
-                <ProtectedRoutes isAuth={this.state.isLogedIn} path="/settings"> <Settings updateUser={this.updateUser} handleLogout={this.handleLogout} /> </ProtectedRoutes>
-                <ProtectedRoutes key='new' isAuth={this.state.isLogedIn} path="/editor" exact > <NewEditPost /> </ProtectedRoutes>
-                <ProtectedRoutes isAuth={this.state.isLogedIn} path="/editor/:slug"> <NewEditPost /> </ProtectedRoutes>
-
-
-                {/* <ProtectedRoutes isAuth={this.state.isLogedIn} path={location.pathname} exact > <Profile /> </ProtectedRoutes> */}
-
-                <Route path="/profile/:username" exact > <Profile /> </Route>
-                <Route path="/profile/:username/favorites" exact > <Profile /> </Route>
-
-                <Route path="*" children={ PageNotFound } />
-
-              </Switch>
+              <Suspense fallback={<div>Loading...</div>}>
+                <Switch>
+                  <Route exact path='/' children={<Home isLogedIn={this.state.isLogedIn} user={this.state.user} />} />
+                  <Route path="/article/:slug" component={ArticlePage} />
+                  <Route path="/signup" > <SignUp /> </Route>
+                  <Route path="/signin" children={this.state.isLogedIn ? <Redirect to="/" /> : <SignIn isLogIn={this.isLogIn} />} />
+                  <ProtectedRoutes isAuth={this.state.isLogedIn} path="/settings"> <Settings updateUser={this.updateUser} handleLogout={this.handleLogout} /> </ProtectedRoutes>
+                  <ProtectedRoutes isAuth={this.state.isLogedIn} path="/editor" exact > <NewEditPost /> </ProtectedRoutes>
+                  <ProtectedRoutes isAuth={this.state.isLogedIn} path="/editor/:slug"> <NewEditPost /> </ProtectedRoutes>
+                  <Route path="/profile/:username" exact > <Profile /> </Route>
+                  <Route path="/profile/:username/favorites" exact > <Profile /> </Route>
+                  <Route path="*" children={PageNotFound} />
+                </Switch>
+              </Suspense>
             </UserProvider>
           </ErrorBoundary>
-
         </Router>
       </Fragment>
     )

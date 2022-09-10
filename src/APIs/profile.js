@@ -17,6 +17,7 @@ const ProfileApi = {
                 headers: header()
             })
     },
+    
     getProfile: async ( username ) => {
         return await fetch( base + `/profiles/${username}`,
         {

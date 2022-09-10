@@ -14,7 +14,7 @@ class Profile extends React.Component {
     static contextType = UserContext;
     user = this.props?.location?.pathname.split("/")[2];
     loginUser = this.context?.user?.username
-
+    
     state = {
         tabSelected: "MyArticle",
         viewProfile: {},
@@ -48,7 +48,7 @@ class Profile extends React.Component {
         try {
             const res = await ProfileApi.getProfile(user);
             const data = await res.json()
-            if (!res.ok) return Promise.reject('Unable to fetch profile!');
+            if (!res.ok) toast.error(`${res.status}: ${res.statusText}`);
             if (data.profile && res.ok && res.status === 200) return this.setState({ viewProfile: data.profile });
             if (data.error) this.setState({ error: data.error });
         } catch {
@@ -114,30 +114,21 @@ class Profile extends React.Component {
     }
 
     handleLikeDislike = async (slug, favorited) => {
-        console.log(slug, favorited, "like or  dislike");
-        const method = favorited ? "DELETE" : "POST";
-        const urls = url.globalFeed + `/${slug}/favorite`
-        console.log(method, urls);
-        try {
-            const res = await fetch(urls, {
-                method, headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Token ${localStorage["user_token"]}`,
-                }
-
-            });
-            console.log(res);
-            const data = res.json();
-            if (res.ok) console.log("done")
-            console.log(data)
-        } catch (err) {
-            console.log(err)
+        const res = favorited ? await ArticleApi.dislikeArticle( slug ) : await ArticleApi.likeArticle( slug )  
+        const data = await res.json();
+        if ( res ) console.log(res)
+        if ( data ) console.log(data)
+        if ( data.article ) {
+            this.handleTab(this.state.tabSelected)
+            if ( data.article.favorited ) {
+                toast.success(`you liked article ${data.article.title} by ${data.article.author.username}`)
+            } else {
+                toast.success(`you dislike article ${data.article.title} by ${data.article.author.username}`)
+            }
         }
-
     }
 
     render() {
-        // console.log(this.state.viewProfile)
         return (<>
 
             {/* //* Profile Hero */}

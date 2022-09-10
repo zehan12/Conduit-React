@@ -1,11 +1,12 @@
 import { BsHeartFill } from 'react-icons/bs'
 import { Link } from "react-router-dom"
 function Post({article, handleLikeDislike}) {
+let Style = "parent flex pt-1 w-9 h-7 align-center border rounded-md m-2 mx-1 hover:bg-[#5CB85C]  hover:text-white cursor-pointer"
     return (<article className='mx-2 mb-6'>
         <div className='flex justify-between border-t-2 pt-7 '>
             <div className='flex mb-3'>
                 <div>
-                    <img className="w-12 h-12 rounded-3xl" src={article.author.image || "./images/profile.png"} alt={article.author.username} />
+                    <img className="w-12 h-12 rounded-3xl" src={article.author.image || "./images/profile.png"} />
                 </div>
                 <Link to={`/profile/${article.author.username}`} className=' ml-2'>
                     <h3 className="text-lg text-green-500 hover:underline hover:text-green-700 "> {article.author.username + "   " + article.favorited} </h3>
@@ -13,8 +14,8 @@ function Post({article, handleLikeDislike}) {
                 </Link>
             </div>
 
-            <div onClick={() => handleLikeDislike(article.slug, article.favorited)}
-                className="parent flex pt-1 w-9 h-7 align-center border rounded-md m-2 mx-1 hover:bg-[#5CB85C] hover:text-white"
+            <div onClick={() =>handleLikeDislike(article.slug, article.favorited) }
+                className={ article.favorited ?  Style + " bg-[#5CB85C] parent-active" : Style  }
             >
                 <BsHeartFill className="text-[#5CB85C] hover:text-white m-1 h-3 child" />
                 <div className='font-thin text-[#5CB85C] text-sm child'> {article.favoritesCount} </div>

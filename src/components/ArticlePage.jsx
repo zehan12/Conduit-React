@@ -1,14 +1,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Component } from "react"
-import url from "../utils/constants"
 import { UserContext } from "./userContext";
 import Loader from "./Loader";
 import AritcleHero from "./ArticleHero";
 import ArticleBody from "./ArticleBody";
 import CommentForm from "./CommentForm";
 import CommentBox from "./CommentBox";
-import { FaTrash } from "react-icons/fa"
+import ArticleApi from "../APIs/article";
+import { toast } from "react-toastify";
+import CommentApi from "../APIs/comment";
 
 
 class ArticlePage extends Component {
@@ -16,16 +17,10 @@ class ArticlePage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      article: null,
-      comments: null,
-      error: "",
-      loading: false,
-      message: "",
-      commentBody: "",
-      commentsLength: 0,
-      slug: this.props.match.params.slug
+      article: null, comments: null, error: "",
+      loading: false, message: "", commentBody: "",
+      commentsLength: 0, slug: this.props.match.params.slug
     }
-
   }
 
   componentDidMount() {
@@ -33,45 +28,48 @@ class ArticlePage extends Component {
     this.fetchComment(this.state.slug);
   }
 
-
   handleArticle = async (slug) => {
+    console.log("render")
     this.setState({ loading: true })
-    const res = await fetch(url.globalFeed + "/" + slug)
-    const data = await res.json()
-    // console.log(data, slug)
-    if (data.article) this.setState({ article: data.article, loading: false })
+    // try  {
+    const res = await ArticleApi.getSingleArticle(slug);
+    const data = await res.json();
+    if (data.article) {
+      this.setState({ article: data.article, loading: false })
+      toast.success(`${data.article.title} is fetched`)
+    }
     //! error from api
-    if (!res.ok) return Promise.reject((data && data.message) || res.status);
-    // console.log(data)
+    if (!res.ok) {
+      toast.error(`${res.status}: ${res.statusText}`);
+    }
+    // } catch {
+
+    // } finally {
+
+    // }
   }
 
   handleDeleteArticle = async (slug) => {
     console.log("handle delete article", slug)
     // try {
-    const res = await fetch(url.globalFeed + `/${slug}`, {
-      method: "DELETE",
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': `Token ${localStorage["user_token"]}`
-      }
-    }
-    )
-    if (res.ok) console.log("DELETED SUCCESSFULLY")
+    const res = await ArticleApi.deleteArticle(slug);
+    if (res.ok) toast.success(" Article Deleted Successfully ")
     if (res.status === 204 && res.ok) this.props.history.push("/")
-
     // } catch (err) {
     //   console.log(err)
-    // }
-
+    // } finally {}
   }
 
-  fetchComment = async () => {
-    const { slug } = this.state
-    const res = await fetch(url.globalFeed + "/" + slug + "/comments");
+  fetchComment = async (slug = this.state.slug) => {
+    const res = await CommentApi.getSingleArticleComment(slug);
     const data = await res.json();
-    if (data.comments) this.setState({ comments: data.comments, commentsLength: data.comments.length });
-    if (!res.ok) return Promise.reject((data && data.message) || res.status);
+    if (data.comments) {
+      this.setState({ comments: data.comments, commentsLength: data.comments.length })
+      toast.success("comment fetched")
+    }
+    if (!res.ok) {
+      toast.error("no comment fetched")
+    }
   }
 
   handleChange = ({ target }) => {
@@ -80,47 +78,33 @@ class ArticlePage extends Component {
   }
 
   handleCreateComment = async () => {
-    const postData = { comment: { body: this.state.commentBody } };
-    try {
-      this.setState({ commentBody: "" });
-      const res = await fetch(url.globalFeed + "/" + this.state.slug + "/comments",
-        {
-          method: "POST",
-          headers:
-          {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': `Token ${localStorage["user_token"]}`
-          },
-          body: JSON.stringify(postData)
-        }
-      )
-      const data = await res.json();
-      console.log(data)
-      if (data.comments) this.setState({ comments: data.comments });
-      if (!res.ok) return Promise.reject((data && data.message) || res.status);
-      this.fetchComment()
-    } catch (err) {
-      console.log(err)
+    const body = this.state.commentBody;
+    const { slug } = this.state;
+    // try {
+    this.setState({ commentBody: "" });
+    const res = await CommentApi.createComment(body, slug)
+    const data = await res.json();
+    if (res.ok) {
+      toast.success("comment created")
     }
+    if (data.comments) {
+      this.setState({ comments: data.comments });
+    }
+    // if (!res.ok) return Promise.reject((data && data.message) || res.status);
+    this.fetchComment()
+    // } catch (err) {
+    //   console.log(err)
+    // }
   }
 
   handleDeleteComment = async (id) => {
     console.log("you about to delete this comment", id, this.state.slug)
     try {
-      console.log(id)
-      const res = await fetch(url.globalFeed + "/" + this.state.slug + "/comments/" + id,
-        {
-          method: "DELETE",
-          headers:
-          {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            Authorization: `Token ${localStorage["user_token"]}`
-          }
-        }
-      )
-      if (res.status === 204 && res.ok) this.fetchComment(this.state.slug)
+      const res = await CommentApi.deleteComment(this.state.slug, id);
+      if (res.status === 204 && res.ok) {
+        toast.success("comment deleted")
+        this.fetchComment(this.state.slug)
+      }
       if (!res.ok) return Promise.reject(res.status);
     } catch (err) {
       console.log(err)

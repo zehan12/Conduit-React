@@ -3,6 +3,7 @@ import { UserContext } from "./userContext";
 import { withRouter } from "react-router-dom"
 import PropTypes from "prop-types";
 import url from "../utils/constants"
+import UserApi from "../APIs/user";
 
 class Settings extends React.Component {
 
@@ -22,36 +23,30 @@ class Settings extends React.Component {
     static contextType = UserContext;
 
     componentDidMount() {
-        let { email, username, password, image, bio } = this.context.user
-        console.log(password)
-        this.setState({ email, username, password, image, bio })
+        let { email, username, image, bio } = this.context.user
+        this.setState({ email, username, image, bio })
     }
 
     handleChange = ({ target }) => {
         let { name, value } = target;
         this.setState({ [name]: value })
+        console.log(this.state)
     }
 
     handleSubmit = async (e) => {
         e.preventDefault();
         try {
             let { updateUser } = this.props
-            const { user_token } = localStorage;
             let { username, email, password, bio, image } = this.state;
             let userBody = { user: { username, email, bio, image } };
             if (password) userBody = { user: { username, email, password, bio, image } };
-            const res = await fetch(url.userVerify,
-                {
-                    method: "PUT",
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        'authorization': `Token ${user_token}`
-                    },
-                    body: JSON.stringify(userBody)
-                }
-            )
+            console.log(userBody,
+                
+                "body")
+            const res = await UserApi.updateUser( userBody )
             const data = await res.json()
+            console.log(res,"my")
+            console.log(data)
             if (data.errors) {
                 if (data.errors.message) {
                     this.setState({ message: data.errors.message })
@@ -60,16 +55,19 @@ class Settings extends React.Component {
 
                 }
             }
-
             if (res.status === 200 && res.ok) {
+                console.log(localStorage["user_token"])
                 localStorage.clear();
                 localStorage.setItem("user_token", data.user.token);
+                console.log(localStorage["user_token"])
+
+                console.log(data.user,"neeeeeeeeeeeeeee")
                 updateUser(data.user)
                 this.props.history.push("/");
             }
-
-            if (!res.ok) return Promise.reject((data && data.message) || res.status);
-
+            if (!res.ok) {
+            console.log(res,"er");
+            }
         } catch (err) {
             console.log(err)
         }
@@ -77,6 +75,7 @@ class Settings extends React.Component {
 
 
     render() {
+        console.log("render")
         console.log(this.context,this.props)
         let { email, username, password, image, bio } = this.state
 

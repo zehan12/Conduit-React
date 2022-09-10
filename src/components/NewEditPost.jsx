@@ -1,6 +1,7 @@
 import React from "react";
 import url from "../utils/constants";
 import { withRouter } from "react-router-dom";
+import ArticleApi from "../APIs/article";
 
 class NewEditPost extends React.Component {
 	constructor(props) {
@@ -13,12 +14,21 @@ class NewEditPost extends React.Component {
 			tagList: [],
 			errors: {},
 			message: "",
+			slug: "",
 		}
 	}
 
-	static getDerivedStateFromProps( props, state ){
-		console.log(props,state,"gdsfp")
-	}
+	// static getDerivedStateFromProps( nextProps,  prevState ){
+	// 	console.log("sTp")
+	// 	console.log(nextProps, prevState,"gdsfp")
+	// 	console.log(nextProps.match.params.slug)
+	// 	if ( nextProps.match.params.slug && nextProps.match.params.slug !== prevState.slug ){
+	// 		return {
+	// 			slug: nextProps.match.params.slug
+	// 		}
+	// 	}
+	//     return null;
+	// }
 
 	updateState = (state) => {
 		this.setState({
@@ -39,16 +49,24 @@ class NewEditPost extends React.Component {
 	}
 
 	componentDidMount() {
-		if (this.props.match.params.slug){
+		console.log("mount")
+		if ( this.props.match.params.slug ){
 			this.fetchArticle(this.props.match.params.slug)
 		} else {
-			if (this.props?.match.path === "/editor") this.restState()
+			if (this.props?.match.path === "/editor") {
+				console.log("here")
+				this.restState()
+			}
 		}
 	}
 
 	componentDidUpdate (prevProp) {
+		console.log("update")
 		if(this.props.match.params.slug && this.props.match.params.slug !== prevProp.match.params.slug) {
-			this.fetchArticle(this.props.match.params.slug)
+			this.fetchArticle(this.state.slug)
+		}  
+		if ( this.props.match.path === "editor" ) {
+			this.restState();
 		}
 	}
 
@@ -73,11 +91,14 @@ class NewEditPost extends React.Component {
 	handleSubmit = async (e) => {
 		e.preventDefault();
 		try {
-			console.log(this.state)
 			let { title, description, body, tagList } = this.state;
 			if (this.state.tags) {
 				tagList = [...tagList, this.state.tags.split(" ")].flat(Infinity)
 			}
+
+			// const res =  await ArticleApi.createArticle( title, description, body, tagList );
+			// const data = await res.json();
+
 
 			console.log(title, description, body)
 
@@ -136,7 +157,7 @@ class NewEditPost extends React.Component {
 
 	render() {
 		// console.log(this.state)
-		console.log(this.props, "prop[s")
+		console.log(this.props,this.state, "prop[s")
 		console.log(Boolean(this.props.match.params.length),"this.pro")
 		let { title, description, body } = this.state.errors;
 

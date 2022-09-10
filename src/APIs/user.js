@@ -18,6 +18,15 @@ const UserApi = {
             headers: header(),
             body: JSON.stringify({ user })
         });
+    },
+
+    updateUser: async ( user ) => {
+        console.log(user,"api")
+        return await fetch( base + "/user", {
+            method:"PUT",
+            headers: header(),
+            body: JSON.stringify({user})
+        } )
     }
 } 
 

@@ -1,14 +1,16 @@
 import React from "react"
+import { toast } from "react-toastify";
+import ArticleApi from "../APIs/article";
 import url from "../utils/constants"
 import Articles from "./Articles"
 import Pagination from "./Pagination"
 // import FeedTabs from "./FeedTabs"
-
+// let newDate = new Date(date).toISOString().split("T")[0];
 class ArticleSection extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            articles: null,
+            articles: [],
             isLoading: false,
             articlesCount: 0,
             activePageIndex: 1,
@@ -19,207 +21,138 @@ class ArticleSection extends React.Component {
     }
 
     componentDidMount() {
-        if (this.props.isLogedIn) {
-            console.log(this.props.user.username, "prop[s]")
-            fetch(`https://mighty-oasis-08080.herokuapp.com/api/articles/?limit=${this.state.articlePerPage}`,
-                {
-                    method: "GET",
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Token ${localStorage["user_token"]}`,
-                    }
-
-                }
-            )
-                .then((res) => {
-                    if (!res.ok) {
-                        throw new Error(res.statusText)
-                    }
-                    return res.json()
-                }).then((data) => {
-                    this.setState({
-                        articles: data.articles,
-                        articlesCount: data.articlesCount,
-                        isLoading: false
-                    })
-                }).catch((err) => {
-                    console.error(err)
-                    this.setState({ error: "NOT ABLE TO FETCH ARTICLES", isLoading: false })
-                })
+        if ( this.props.isLogedIn) {
+            console.log("her")
+            this.fetchArticle(this.props.user.username, "logedInUser")
         } else {
-            this.setState({ isLoading: true, articles: null })
-            fetch(`https://mighty-oasis-08080.herokuapp.com/api/articles/?limit=${this.state.articlePerPage}`)
-                .then((res) => {
-                    if (!res.ok) {
-                        throw new Error(res.statusText)
-                    }
-                    return res.json()
-                }).then((data) => {
-                    this.setState({
-                        articles: data.articles,
-                        articlesCount: data.articlesCount,
-                        isLoading: false
-                    })
-                }).catch((err) => {
-                    console.error(err)
-                    this.setState({ error: "NOT ABLE TO FETCH ARTICLES", isLoading: false })
-                })
+            this.fetchArticle(this.state.articlePerPage, "global page");
         }
     }
 
-    // componentDidUpdate(_prevProps,prevState){
-    //     if ( prevState.activePageIndex !== this.activePageIndex || 
-    //         this.tagSelected !== this.tagSelected ) {
-    //             this.handleFetchOn()
-    //     }
-    // }
-
-    handleArticleFetch = async (url,) => {
-
-    }
-
-    fetchArticles = (author) => {
-        this.setState({ isLoading: true, articles: null })
-        fetch(`https://mighty-oasis-08080.herokuapp.com/api/articles/?limit=${this.state.articlePerPage}&author=${author}`)
-            .then((res) => {
-                if (!res.ok) {
-                    throw new Error(res.statusText)
-                }
-                return res.json()
-            }).then((data) => {
+    fetchArticle = async (param, what) => {
+        console.log(what,"eh")
+        const getApi = (what) => {
+            switch (what) {
+                case "global page":
+                    return ArticleApi.getAllArticle;
+                case "tags":
+                    return ArticleApi.byTags;
+                case "logedInUser":
+                    return ArticleApi.byFeed;
+                case "page":
+                    return ArticleApi.byPagination;
+                default:
+                    return ArticleApi.getAllArticle;
+            }
+        }
+        try {
+            this.setState({ isLoading: true, articles: [], error: "" })
+            const api = getApi(what);
+            const res = await api(param);
+            const data = await res.json();
+            if (!res.ok) {
+                toast.error(`${res.status}: ${res.statusText}`);
+            }
+            if (data.articles) {
+                toast.success("fetched Articles")
                 this.setState({
                     articles: data.articles,
                     articlesCount: data.articlesCount,
                     isLoading: false
                 })
-            }).catch((err) => {
-                console.error(err)
-                this.setState({ error: "NOT ABLE TO FETCH ARTICLES", isLoading: false })
-            })
+            }
+        } catch (error) {
+            // this.setState({ error: "NOT ABLE TO FETCH ARTICLES" })
+            toast.error("Unable Fetched Articles");
+        } finally {
+            this.setState((prevState) => ({ ...prevState, isLoading: false }))
+        }
     }
 
-    // handleFetch = async (url) => {
-    //     try {
-    //         const response = await fetch(url + "articles/?limit=10");
-    //         const json = await response.json()
-    //         console.log(json, "here")
-    //         if (json) return this.setState({ articles: json.articles, articlesCount: json.articlesCount })
-    //         console.log(this.state.articles)
-    //         if (json.errors) this.setState({ error: json.error })
-    //         if (!response.ok) this.setState({ error: response.statusText })
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
-
-    handleFetchOn = () => {
-        const limit = this.state.articlePerPage;
-        const offset = (this.state.activePageIndex - 1) * limit;
-        this.setState({ isLoading: true, articles: null })
-        fetch(`https://mighty-oasis-08080.herokuapp.com/api/articles/?offset=${offset}&limit=${limit}`)
-            .then((res) => {
-                if (!res.ok) {
-                    throw new Error(res.statusText)
-                }
-                return res.json()
-            }).then((data) => {
-                this.setState({
-                    articles: data.articles,
-                    articlesCount: data.articlesCount,
-                    isLoading: false
-                })
-            }).catch((err) => {
-                console.error(err)
-                this.setState({ error: "NOT ABLE TO FETCH ARTICLES", isLoading: false })
-            })
-    }
 
     componentDidUpdate(_prevProps, prevState) {
         if (_prevProps.tagSelected !== this.props.tagSelected) {
-            this.handleFetchOnTag(this.props.tagSelected)
+            this.fetchArticle(this.props.tagSelected, "tags");
         }
         if (_prevProps.activeTab !== this.props.activeTab) {
             if (this.props.activeTab === "Your Feed") {
-                this.fetchArticles(this.props.user.username)
+                this.fetchArticle(this.props.user.username, "logedInUser")
             } else {
-                this.fetchArticles()
+                this.fetchArticle()
             }
         }
     }
 
 
-    handleFetchOnTag = (tag) => {
-        this.setState({ isLoading: true, articles: null })
-        fetch(`https://mighty-oasis-08080.herokuapp.com/api/articles/?limit=${10}` + (tag && `&tag=${tag}`))
-            .then((res) => {
-                if (!res.ok) {
-                    throw new Error(res.statusText)
-                }
-                return res.json()
-            }).then((data) => {
-                this.setState({
-                    articles: data.articles,
-                    articlesCount: data.articlesCount,
-                    isLoading: false
-                })
-            }).catch((err) => {
-                console.error(err)
-                this.setState({ error: "NOT ABLE TO FETCH ARTICLES", isLoading: false })
-            })
-    }
-
-    // change page
     paginate = (page) => {
-        this.setState({ activePageIndex: page }, () => this.handleFetchOn())
+        let offset = (page - 1) * 10;
+        this.setState({ activePageIndex: page }, () => this.fetchArticle(offset, "page"))
     }
 
-    handleLikeDislike = async(slug, favorited) => {
-        console.log(slug, favorited, "like or  dislike");
-        const method = favorited ? "DELETE" : "POST";
-        const urls = url.globalFeed+`/${slug}/favorite` 
-        console.log(method,urls);
-        try {
-            const res = await fetch( urls, { method, headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Token ${localStorage["user_token"]}`,
-            }
 
-            } );
-            console.log(res);
-            const data = res.json();
-            if (res.ok) console.log("done")
-            console.log(data)
-        } catch ( err ) {
-            console.log(err)
+    handleLikeDislike = async (slug, favorited) => {
+        const res = favorited ? await ArticleApi.dislikeArticle(slug) : await ArticleApi.likeArticle(slug)
+        const data = await res.json();
+        if (res) console.log(res)
+        if (data) console.log(data)
+        if (res.ok){
+
         }
-
+        if (data.article) {
+            if (data.article.favorited) {
+                toast.success(`you liked article ${data.article.title} by ${data.article.author.username}`)
+            } else {
+                toast.success(`you dislike article ${data.article.title} by ${data.article.author.username}`)
+            }
+        }
     }
+
+    // handleLikeDislike = async (slug, favorited) => {
+
+    //     if (!this.props.isLogedIn) return toast.error("you are not loged In")
+    //     console.log(slug, favorited, "like or  dislike");
+    //     const method = favorited ? "DELETE" : "POST";
+    //     const urls = url.globalFeed + `/${slug}/favorite`
+    //     console.log(method, urls);
+    //     try {
+    //         const res = await fetch(urls, {
+    //             method, headers: {
+    //                 'Content-Type': 'application/json',
+    //                 'Authorization': `Token ${localStorage["user_token"]}`,
+    //             }
+
+    //         });
+    //         console.log(res);
+    //         const data = res.json();
+    //         if (res.ok) console.log("done")
+    //         console.log(data)
+    //     } catch (err) {
+    //         console.log(err)
+    //     }
+
+    // }
 
 
 
     render() {
         return <>
-            {/* <FeedTabs 
-            removeTag={this.props.removeTag}
-            tagSelected={this.props.tagSelected} /> */}
             <Articles
                 articles={this.state.articles}
                 error={this.state.error}
                 isLoading={this.state.isLoading}
                 handleLikeDislike={this.handleLikeDislike}
-
                 tagSelected={this.state.tagSelected}
                 tagArticles={this.state.tagArticles}
                 isTagClicked={this.props.isTagClicked}
             />
             {
-                this.state.articles?.length > 11 ?
-                <Pagination articlesCount={this.state.articlesCount}
-                    activePageIndex={this.state.activePageIndex}
-                    articlePerPage={this.state.articlePerPage}
-                    paginate={this.paginate}
-                />
-                : ""
+                this.state.articles?.length >= 10 ?
+                    <Pagination articlesCount={this.state.articlesCount}
+                        activePageIndex={this.state.activePageIndex}
+                        articlePerPage={this.state.articlePerPage}
+                        paginate={this.paginate}
+                    />
+                    : ""
             }
         </>
     }
